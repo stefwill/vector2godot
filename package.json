@@ -1,0 +1,50 @@
+{
+  "name": "vector2godot",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Vector2Godot - Create vector shapes and generate Godot _draw() function code",
+  "author": "Stefan Willoughby",
+  "main": "electron-main.js",
+  "homepage": "./",
+  "scripts": {
+    "dev": "electron .",
+    "build": "npm run build:prepare && npm run build:electron",
+    "build:prepare": "npm install --production=false",
+    "build:electron": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac",
+    "clean": "rm -rf dist/ build/ release/ out/",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.stefwill.vector2godot",
+    "productName": "Vector2Godot",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "!build/**/*",
+      "!release/**/*"
+    ],
+    "linux": {
+      "target": "AppImage"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  },
+  "devDependencies": {
+    "vite": "^5.0.8",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0"
+  }
+}

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vector Drawing App for Godot</title>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Vector Drawing App</h1>
+        <p>Draw shapes and get Godot _draw() code</p>
+      </header>
+      
+      <div class="container">
+        <div class="toolbar">
+          <div class="tool-group">
+            <h3>Drawing Tools</h3>
+            <button id="select-tool" class="tool-btn active" data-tool="select">
+              <span>Select</span>
+            </button>
+            <button id="line-tool" class="tool-btn" data-tool="line">
+              <span>Line</span>
+            </button>
+            <button id="rect-tool" class="tool-btn" data-tool="rectangle">
+              <span>Rectangle</span>
+            </button>
+            <button id="circle-tool" class="tool-btn" data-tool="circle">
+              <span>Circle</span>
+            </button>
+            <button id="polygon-tool" class="tool-btn" data-tool="polygon">
+              <span>Polygon</span>
+            </button>
+          </div>
+          
+          <div class="tool-group">
+            <h3>Properties</h3>
+            <div class="property">
+              <label for="stroke-color">Stroke Color:</label>
+              <input type="color" id="stroke-color" value="#000000">
+            </div>
+            <div class="property">
+              <label for="fill-color">Fill Color:</label>
+              <input type="color" id="fill-color" value="#ffffff">
+            </div>
+            <div class="property">
+              <label for="stroke-width">Stroke Width:</label>
+              <input type="range" id="stroke-width" min="1" max="10" value="2">
+              <span id="stroke-width-value">2</span>
+            </div>
+            <div class="property">
+              <label>
+                <input type="checkbox" id="fill-enabled" checked>
+                Fill Shape
+              </label>
+            </div>
+          </div>
+          
+          <div class="tool-group">
+            <h3>Grid</h3>
+            <div class="property">
+              <label for="grid-size">Grid Size:</label>
+              <input type="range" id="grid-size" min="5" max="50" value="20">
+              <span id="grid-size-value">20</span>
+            </div>
+            <div class="property">
+              <label>
+                <input type="checkbox" id="show-grid" checked>
+                Show Grid
+              </label>
+            </div>
+            <div class="property">
+              <label>
+                <input type="checkbox" id="snap-to-grid" checked>
+                Snap to Grid
+              </label>
+            </div>
+          </div>
+          
+          <div class="tool-group">
+            <h3>Canvas Size</h3>
+            <div class="property">
+              <label for="canvas-width">Width:</label>
+              <input type="range" id="canvas-width" min="200" max="1600" value="800">
+              <span id="canvas-width-value">800</span>
+            </div>
+            <div class="property">
+              <label for="canvas-height">Height:</label>
+              <input type="range" id="canvas-height" min="150" max="1200" value="600">
+              <span id="canvas-height-value">600</span>
+            </div>
+            <div class="property">
+              <label for="preset-sizes">Presets:</label>
+              <select id="preset-sizes">
+                <option value="">Custom</option>
+                <option value="800x600">800x600 (4:3)</option>
+                <option value="1024x768">1024x768 (4:3)</option>
+                <option value="1280x720">1280x720 (16:9)</option>
+                <option value="1920x1080">1920x1080 (16:9)</option>
+                <option value="640x480">640x480 (Classic)</option>
+                <option value="480x320">480x320 (Mobile)</option>
+                <option value="1080x1080">1080x1080 (Square)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="tool-group">
+            <h3>Actions</h3>
+            <button id="clear-btn" class="action-btn">Clear Canvas</button>
+            <button id="copy-code-btn" class="action-btn">Copy Code</button>
+          </div>
+          
+          <div class="tool-group">
+            <h3>Zoom & View</h3>
+            <div class="zoom-controls">
+              <button id="zoom-out" class="zoom-btn">-</button>
+              <span id="zoom-level">100%</span>
+              <button id="zoom-in" class="zoom-btn">+</button>
+            </div>
+            <button id="zoom-reset" class="action-btn">Reset View</button>
+            <div class="help-text">
+              <small>Mouse wheel to zoom<br>Shift+drag to pan</small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="main-content">
+          <div class="canvas-container">
+            <canvas id="drawing-canvas" width="800" height="600"></canvas>
+          </div>
+          
+          <div class="code-panel">
+            <h3>Godot _draw() Code</h3>
+            <textarea id="code-output" readonly placeholder="Draw shapes to see generated code..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

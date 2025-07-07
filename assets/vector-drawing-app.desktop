@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Vector Drawing App for Godot
+Comment=Create vector shapes and generate Godot _draw() code
+Exec=/opt/VectorDrawingApp/vector-drawing-app
+Icon=/opt/VectorDrawingApp/icon.png
+Categories=Graphics;2DGraphics;Development;
+Keywords=vector;drawing;godot;graphics;design;
+StartupNotify=true
+Terminal=false

@@ -1,14 +1,15 @@
 {
   "name": "vector2godot",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Vector2Godot - Create vector shapes and generate Godot _draw() function code",
   "author": "Stefan Willoughby",
-  "main": "electron-main.js",
+  "main": "electron-main.cjs",
   "homepage": "./",
   "scripts": {
-    "dev": "electron .",
+    "dev": "concurrently \"npm run dev:vite\" \"wait-on http://localhost:5173 && NODE_ENV=development electron .\"",
+    "dev:vite": "vite --port 5173",
     "build": "npm run build:prepare && npm run build:electron",
     "build:prepare": "npm install --production=false",
     "build:electron": "electron-builder",
@@ -31,13 +32,26 @@
       "!release/**/*"
     ],
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "category": "Graphics",
+      "icon": "assets/icon.png",
+      "synopsis": "Vector drawing app for Godot game engine",
+      "description": "Create vector shapes and generate Godot _draw() function code. Features drawing tools, real-time code generation, and customizable properties.",
+      "desktop": {
+        "Name": "Vector2Godot",
+        "GenericName": "Vector Drawing Tool",
+        "Comment": "Create vector shapes and generate Godot code",
+        "Keywords": "vector;drawing;godot;gamedev;graphics;design",
+        "StartupWMClass": "Vector2Godot"
+      }
     },
     "win": {
-      "target": "portable"
+      "target": "portable",
+      "icon": "assets/icon.png"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "assets/icon.png"
     }
   },
   "devDependencies": {

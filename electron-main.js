@@ -5,10 +5,10 @@ const isDev = process.env.NODE_ENV === 'development';
 function createWindow() {
   // Create the browser window
   const mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 1000,
-    minWidth: 1200,
-    minHeight: 800,
+    width: 1280,
+    height: 720,
+    minWidth: 1000,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -23,7 +23,7 @@ function createWindow() {
 
   // Load the app
   if (isDev) {
-    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.loadURL('http://localhost:5173');
     // Open DevTools in development
     mainWindow.webContents.openDevTools();
   } else {

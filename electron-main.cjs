@@ -1,14 +1,14 @@
 const { app, BrowserWindow, Menu, dialog, shell } = require('electron');
 const path = require('path');
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 function createWindow() {
   // Create the browser window
   const mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 1000,
-    minWidth: 1200,
-    minHeight: 800,
+    width: 1280,
+    height: 720,
+    minWidth: 1000,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -29,7 +29,7 @@ function createWindow() {
 
   // Load the app
   if (isDev) {
-    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.loadURL('http://localhost:5173');
     // Open DevTools in development
     mainWindow.webContents.openDevTools();
   } else {
@@ -39,16 +39,40 @@ function createWindow() {
   // Show window when ready
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-  });
+  });    // Handle window closed
+    mainWindow.on('closed', () => {
+      // Dereference the window object
+      app.quit();
+    });
 
-  // Handle window closed
-  mainWindow.on('closed', () => {
-    // Dereference the window object
-    app.quit();
-  });
+    // Handle menu events from renderer
+    mainWindow.webContents.on('did-finish-load', () => {
+      // Listen for menu events
+      const { ipcMain } = require('electron');
+      
+      ipcMain.on('menu-clear', () => {
+        mainWindow.webContents.send('menu-clear');
+      });
+      
+      ipcMain.on('menu-copy', () => {
+        mainWindow.webContents.send('menu-copy');
+      });
+      
+      ipcMain.on('menu-zoom-in', () => {
+        mainWindow.webContents.send('menu-zoom-in');
+      });
+      
+      ipcMain.on('menu-zoom-out', () => {
+        mainWindow.webContents.send('menu-zoom-out');
+      });
+      
+      ipcMain.on('menu-zoom-reset', () => {
+        mainWindow.webContents.send('menu-zoom-reset');
+      });
+    });
 
-  // Create application menu
-  createMenu();
+    // Create application menu
+    createMenu();
 }
 
 function createMenu() {

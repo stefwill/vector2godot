@@ -5,6 +5,14 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.6] - 2025-07-10
+
+### Changed
+- **UI Layout Reorganization**: Moved drawing tools from floating toolbar to main toolbar
+  - Relocated all drawing tools (select, line, rectangle, circle, polygon, eraser) from floating toolbar to right-side tool bar
+  - Removed the floating toolbar completely for a cleaner, more organized interface
+  - Consolidated all tools in the main toolbar for better accessibility and organization
+
 ## [1.1.5] - 2025-07-10
 
 ### Fixed

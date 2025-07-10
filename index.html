@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="version" content="1.1.5" />
+    <meta name="version" content="1.1.6" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vector2Godot - Vector Drawing Tool</title>
@@ -79,8 +79,16 @@
 
         <!-- Main Canvas Area -->
         <main class="canvas-area">
-          <!-- Floating Toolbar -->
-          <div class="floating-toolbar">
+          <div class="canvas-wrapper">
+            <div class="canvas-container">
+              <canvas id="drawing-canvas" width="800" height="600"></canvas>
+            </div>
+          </div>
+        </main>
+
+        <!-- Tool Bar (Right Side) -->
+        <div class="tool-bar">
+          <div class="tool-bar-content">
             <div class="tools-vertical">
               <button id="select-tool" class="tool-btn-vertical" data-tool="select" title="Select Tool (V)">
                 <i class="fas fa-mouse-pointer"></i>
@@ -102,18 +110,6 @@
                 <i class="fas fa-eraser"></i>
               </button>
             </div>
-          </div>
-          
-          <div class="canvas-wrapper">
-            <div class="canvas-container">
-              <canvas id="drawing-canvas" width="800" height="600"></canvas>
-            </div>
-          </div>
-        </main>
-
-        <!-- Tool Bar (Right Side) -->
-        <div class="tool-bar">
-          <div class="tool-bar-content">
             <button id="copy-code-btn" class="toolbar-btn" title="Copy Code">
               <i class="fas fa-copy"></i>
             </button>

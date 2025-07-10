@@ -1,7 +1,7 @@
 {
   "name": "vector2godot",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.6",
   "type": "module",
   "description": "Vector2Godot - Create vector shapes and generate Godot _draw() function code",
   "author": "Stefan Willoughby",

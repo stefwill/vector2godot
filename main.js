@@ -1622,13 +1622,17 @@ class VectorDrawingApp {
         <div class="property-group">
           <div class="slider-group">
             <label for="modal-canvas-width">Width</label>
-            <input type="range" id="modal-canvas-width" min="200" max="1600" value="${document.getElementById('canvas-width').value}">
-            <span id="modal-canvas-width-value">${document.getElementById('canvas-width').value}</span>
+            <div class="input-slider-group">
+              <input type="range" id="modal-canvas-width" min="200" max="1600" value="${document.getElementById('canvas-width').value}">
+              <input type="number" id="modal-canvas-width-value" min="200" max="1600" value="${document.getElementById('canvas-width').value}">
+            </div>
           </div>
           <div class="slider-group">
             <label for="modal-canvas-height">Height</label>
-            <input type="range" id="modal-canvas-height" min="150" max="1200" value="${document.getElementById('canvas-height').value}">
-            <span id="modal-canvas-height-value">${document.getElementById('canvas-height').value}</span>
+            <div class="input-slider-group">
+              <input type="range" id="modal-canvas-height" min="150" max="1200" value="${document.getElementById('canvas-height').value}">
+              <input type="number" id="modal-canvas-height-value" min="150" max="1200" value="${document.getElementById('canvas-height').value}">
+            </div>
           </div>
           <div class="select-group">
             <label for="modal-preset-sizes">Presets</label>
@@ -1662,8 +1666,10 @@ class VectorDrawingApp {
         <div class="property-group">
           <div class="slider-group">
             <label for="modal-grid-size">Grid Size</label>
-            <input type="range" id="modal-grid-size" min="5" max="50" value="${document.getElementById('grid-size').value}">
-            <span id="modal-grid-size-value">${document.getElementById('grid-size').value}</span>
+            <div class="input-slider-group">
+              <input type="range" id="modal-grid-size" min="5" max="50" value="${document.getElementById('grid-size').value}">
+              <input type="number" id="modal-grid-size-value" min="5" max="50" value="${document.getElementById('grid-size').value}">
+            </div>
           </div>
           <div class="toggle-group">
             <input type="checkbox" id="modal-show-grid" ${document.getElementById('show-grid').checked ? 'checked' : ''}>
@@ -1731,8 +1737,10 @@ class VectorDrawingApp {
           </div>
           <div class="slider-group">
             <label for="modal-stroke-width">Width</label>
-            <input type="range" id="modal-stroke-width" min="1" max="10" value="${document.getElementById('stroke-width') ? document.getElementById('stroke-width').value : '2'}">
-            <span id="modal-stroke-width-value">${document.getElementById('stroke-width') ? document.getElementById('stroke-width').value : '2'}</span>
+            <div class="input-slider-group">
+              <input type="range" id="modal-stroke-width" min="1" max="10" value="${document.getElementById('stroke-width') ? document.getElementById('stroke-width').value : '2'}">
+              <input type="number" id="modal-stroke-width-value" min="1" max="10" value="${document.getElementById('stroke-width') ? document.getElementById('stroke-width').value : '2'}">
+            </div>
           </div>
         </div>
         <div class="property-group">
@@ -1764,15 +1772,56 @@ class VectorDrawingApp {
     const heightValue = document.getElementById('modal-canvas-height-value');
     const presetSelect = document.getElementById('modal-preset-sizes');
     
+    // Function to sync slider and input values with validation
+    const syncValues = (slider, input, min, max) => {
+      const value = Math.min(max, Math.max(min, parseInt(slider.value) || min));
+      slider.value = value;
+      input.value = value;
+    };
+    
     if (widthInput && widthValue) {
+      // Sync from slider to input
       widthInput.addEventListener('input', () => {
-        widthValue.textContent = widthInput.value;
+        widthValue.value = widthInput.value;
+      });
+      
+      // Sync from input to slider with validation
+      widthValue.addEventListener('input', () => {
+        const min = parseInt(widthInput.min);
+        const max = parseInt(widthInput.max);
+        const value = Math.min(max, Math.max(min, parseInt(widthValue.value) || min));
+        widthInput.value = value;
+        widthValue.value = value;
+      });
+      
+      // Validate on blur
+      widthValue.addEventListener('blur', () => {
+        const min = parseInt(widthInput.min);
+        const max = parseInt(widthInput.max);
+        syncValues(widthInput, widthValue, min, max);
       });
     }
     
     if (heightInput && heightValue) {
+      // Sync from slider to input
       heightInput.addEventListener('input', () => {
-        heightValue.textContent = heightInput.value;
+        heightValue.value = heightInput.value;
+      });
+      
+      // Sync from input to slider with validation
+      heightValue.addEventListener('input', () => {
+        const min = parseInt(heightInput.min);
+        const max = parseInt(heightInput.max);
+        const value = Math.min(max, Math.max(min, parseInt(heightValue.value) || min));
+        heightInput.value = value;
+        heightValue.value = value;
+      });
+      
+      // Validate on blur
+      heightValue.addEventListener('blur', () => {
+        const min = parseInt(heightInput.min);
+        const max = parseInt(heightInput.max);
+        syncValues(heightInput, heightValue, min, max);
       });
     }
     
@@ -1783,8 +1832,8 @@ class VectorDrawingApp {
           const [width, height] = preset.split('x').map(Number);
           widthInput.value = width;
           heightInput.value = height;
-          widthValue.textContent = width;
-          heightValue.textContent = height;
+          widthValue.value = width;
+          heightValue.value = height;
         }
       });
     }
@@ -1794,9 +1843,33 @@ class VectorDrawingApp {
     const gridSizeInput = document.getElementById('modal-grid-size');
     const gridSizeValue = document.getElementById('modal-grid-size-value');
     
+    // Function to sync slider and input values with validation
+    const syncValues = (slider, input, min, max) => {
+      const value = Math.min(max, Math.max(min, parseInt(slider.value) || min));
+      slider.value = value;
+      input.value = value;
+    };
+    
     if (gridSizeInput && gridSizeValue) {
+      // Sync from slider to input
       gridSizeInput.addEventListener('input', () => {
-        gridSizeValue.textContent = gridSizeInput.value;
+        gridSizeValue.value = gridSizeInput.value;
+      });
+      
+      // Sync from input to slider with validation
+      gridSizeValue.addEventListener('input', () => {
+        const min = parseInt(gridSizeInput.min);
+        const max = parseInt(gridSizeInput.max);
+        const value = Math.min(max, Math.max(min, parseInt(gridSizeValue.value) || min));
+        gridSizeInput.value = value;
+        gridSizeValue.value = value;
+      });
+      
+      // Validate on blur
+      gridSizeValue.addEventListener('blur', () => {
+        const min = parseInt(gridSizeInput.min);
+        const max = parseInt(gridSizeInput.max);
+        syncValues(gridSizeInput, gridSizeValue, min, max);
       });
     }
   }
@@ -1842,9 +1915,33 @@ class VectorDrawingApp {
     const strokeWidthInput = document.getElementById('modal-stroke-width');
     const strokeWidthValue = document.getElementById('modal-stroke-width-value');
     
+    // Function to sync slider and input values with validation
+    const syncValues = (slider, input, min, max) => {
+      const value = Math.min(max, Math.max(min, parseInt(slider.value) || min));
+      slider.value = value;
+      input.value = value;
+    };
+    
     if (strokeWidthInput && strokeWidthValue) {
+      // Sync from slider to input
       strokeWidthInput.addEventListener('input', () => {
-        strokeWidthValue.textContent = strokeWidthInput.value;
+        strokeWidthValue.value = strokeWidthInput.value;
+      });
+      
+      // Sync from input to slider with validation
+      strokeWidthValue.addEventListener('input', () => {
+        const min = parseInt(strokeWidthInput.min);
+        const max = parseInt(strokeWidthInput.max);
+        const value = Math.min(max, Math.max(min, parseInt(strokeWidthValue.value) || min));
+        strokeWidthInput.value = value;
+        strokeWidthValue.value = value;
+      });
+      
+      // Validate on blur
+      strokeWidthValue.addEventListener('blur', () => {
+        const min = parseInt(strokeWidthInput.min);
+        const max = parseInt(strokeWidthInput.max);
+        syncValues(strokeWidthInput, strokeWidthValue, min, max);
       });
     }
   }

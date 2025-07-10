@@ -5,6 +5,41 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2025-07-10
+
+### Fixed
+- **Fit Canvas Functionality**: Completely reimplemented "Fit Canvas" button to properly fit content to viewport
+  - Now calculates bounds of all drawn shapes and fits them optimally in the viewport
+  - For empty canvas, fits the logical canvas dimensions to viewport
+  - Uses proper zoom and pan system instead of CSS transforms
+  - Centers content in viewport with appropriate padding
+  - Maintains zoom limits (0.1x to 5x) and updates zoom level display
+  - Works consistently with existing zoom and pan controls
+
+## [1.1.1] - 2025-07-10
+
+### Fixed
+- **Fit Canvas Button**: Fixed non-functional "Fit Canvas" button by adding missing event listener
+  - Button now properly calls `fitCanvasToContainer()` method when clicked
+  - Maintains existing keyboard shortcut functionality (Ctrl+F)
+  - Button scales canvas to fit optimally within the container
+
+## [1.1.0] - 2025-07-10
+
+### Added
+- **Professional Splash Screen**: Enhanced app startup experience with animated branding
+  - Large Vector2Godot logo (128px) with smooth animations
+  - App name displayed with elegant typography
+  - Loading spinner with status text
+  - Smooth fade-in/fade-out transitions
+  - Minimum display time of 1.5 seconds for optimal UX
+  - Theme-aware design compatible with both light and dark modes
+  - Animated effects including floating logo and glow effects
+
+### Changed
+- **Version Management**: Updated to MINOR version (1.1.0) for new splash screen feature
+- **Enhanced README**: Added splash screen feature to features list
+
 ## [1.1.0] - 2025-01-24
 
 ### Added

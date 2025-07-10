@@ -193,6 +193,12 @@ class VectorDrawingApp {
       btn.addEventListener('click', this.copyCode.bind(this));
     });
     
+    // Fit canvas button
+    const fitCanvasBtn = document.getElementById('fit-canvas');
+    if (fitCanvasBtn) {
+      fitCanvasBtn.addEventListener('click', this.fitCanvasToContainer.bind(this));
+    }
+    
     // Bottom panel toggle
     const toggleBtn = document.getElementById('toggle-code-panel');
     if (toggleBtn) {
@@ -1449,26 +1455,87 @@ class VectorDrawingApp {
     const container = document.querySelector('.canvas-container');
     if (!container) return;
     
-    // Get container dimensions (minus padding)
+    // Get container dimensions
     const containerRect = container.getBoundingClientRect();
-    const containerWidth = containerRect.width - 40; // Account for 20px padding on each side
-    const containerHeight = containerRect.height - 40;
+    const viewportWidth = containerRect.width;
+    const viewportHeight = containerRect.height;
     
-    // Calculate scale to fit both width and height
-    const scaleX = containerWidth / this.canvasWidth;
-    const scaleY = containerHeight / this.canvasHeight;
-    const scale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond 100%
+    // If no shapes, fit the logical canvas size to viewport
+    if (this.shapes.length === 0) {
+      const scaleX = viewportWidth / this.canvasWidth;
+      const scaleY = viewportHeight / this.canvasHeight;
+      const scale = Math.min(scaleX, scaleY) * 0.9; // 90% to leave some margin
+      
+      this.zoom = Math.max(0.1, Math.min(5, scale));
+      this.offsetX = (viewportWidth - this.canvasWidth * this.zoom) / 2;
+      this.offsetY = (viewportHeight - this.canvasHeight * this.zoom) / 2;
+    } else {
+      // Calculate bounds of all shapes
+      let minX = Infinity, minY = Infinity;
+      let maxX = -Infinity, maxY = -Infinity;
+      
+      this.shapes.forEach(shape => {
+        switch (shape.type) {
+          case 'line':
+            minX = Math.min(minX, shape.startX, shape.endX);
+            maxX = Math.max(maxX, shape.startX, shape.endX);
+            minY = Math.min(minY, shape.startY, shape.endY);
+            maxY = Math.max(maxY, shape.startY, shape.endY);
+            break;
+          case 'rectangle':
+            minX = Math.min(minX, shape.x);
+            maxX = Math.max(maxX, shape.x + shape.width);
+            minY = Math.min(minY, shape.y);
+            maxY = Math.max(maxY, shape.y + shape.height);
+            break;
+          case 'circle':
+            minX = Math.min(minX, shape.x - shape.radius);
+            maxX = Math.max(maxX, shape.x + shape.radius);
+            minY = Math.min(minY, shape.y - shape.radius);
+            maxY = Math.max(maxY, shape.y + shape.radius);
+            break;
+          case 'polygon':
+            shape.points.forEach(point => {
+              minX = Math.min(minX, point.x);
+              maxX = Math.max(maxX, point.x);
+              minY = Math.min(minY, point.y);
+              maxY = Math.max(maxY, point.y);
+            });
+            break;
+        }
+      });
+      
+      // Add some padding around the content
+      const padding = 50;
+      minX -= padding;
+      minY -= padding;
+      maxX += padding;
+      maxY += padding;
+      
+      const contentWidth = maxX - minX;
+      const contentHeight = maxY - minY;
+      
+      // Calculate zoom to fit content
+      const scaleX = viewportWidth / contentWidth;
+      const scaleY = viewportHeight / contentHeight;
+      const scale = Math.min(scaleX, scaleY) * 0.9; // 90% to leave some margin
+      
+      this.zoom = Math.max(0.1, Math.min(5, scale));
+      
+      // Center the content
+      const contentCenterX = (minX + maxX) / 2;
+      const contentCenterY = (minY + maxY) / 2;
+      
+      this.offsetX = viewportWidth / 2 - contentCenterX * this.zoom;
+      this.offsetY = viewportHeight / 2 - contentCenterY * this.zoom;
+    }
     
-    // Store the CSS scale for mouse coordinate calculations
-    this.cssScale = scale;
+    // Reset CSS transform since we're using the zoom system
+    this.canvas.style.transform = '';
+    this.cssScale = 1;
     
-    // Apply the scale as CSS transform
-    this.canvas.style.transform = `scale(${scale})`;
-    this.canvas.style.transformOrigin = 'center center';
-    
-    // Update zoom level display to reflect the fitting scale
-    const displayZoom = this.zoom * scale;
-    document.getElementById('zoom-level').textContent = Math.round(displayZoom * 100) + '%';
+    this.redrawCanvas();
+    document.getElementById('zoom-level').textContent = Math.round(this.zoom * 100) + '%';
   }
   
   setupKeyboardShortcuts() {

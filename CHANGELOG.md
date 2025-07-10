@@ -5,6 +5,38 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2025-07-10
+
+### Fixed
+- **Shape Closure Detection**: Enhanced debugging and fixed issues with automatic line-to-polygon conversion
+  - Added comprehensive console logging for troubleshooting shape closure detection
+  - Increased tolerance from 10 to 25 pixels to better handle grid snapping
+  - Improved connection detection logic with detailed distance calculations
+  - Enhanced path building algorithm with step-by-step debugging
+  - Fixed validation of closed path points and line counting
+  - Better handling of endpoint matching for connected lines
+
+### Changed
+- **Debug Output**: Added extensive logging to help identify and resolve shape closure issues
+- **Tolerance Settings**: Increased connection tolerance to accommodate grid snapping behavior
+
+## [1.1.4] - 2025-07-10
+
+### Added
+- **Automatic Shape Closure**: Intelligent detection and conversion of closed line shapes to filled polygons
+  - Automatically detects when lines form a closed shape (triangle, square, pentagon, etc.)
+  - Converts connected line segments into a single filled polygon
+  - Uses 10-pixel tolerance for endpoint connection detection
+  - Preserves original stroke color, fill color, and stroke width
+  - Automatically enables fill for closed shapes
+  - Provides user feedback when shape closure is detected
+  - Removes original line segments to avoid duplication
+  - Supports complex polygons with multiple sides
+
+### Changed
+- **Line Tool Behavior**: Enhanced line drawing to intelligently recognize shape completion
+- **User Experience**: Added visual feedback when closed shapes are automatically created
+
 ## [1.1.3] - 2025-07-10
 
 ### Fixed

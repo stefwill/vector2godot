@@ -34,6 +34,8 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 - Use `npm` for package management.
 - Use `git` for version control.
 - Use `electron-builder` for building the application.
+- Use `vite` for development and production builds.
+- Close terminal windows when you finish with them.
 
 # Versioning
 - The version number should be updated after each chat.

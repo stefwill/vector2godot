@@ -432,7 +432,7 @@ class VectorDrawingApp {
       toolStatus.textContent = '✋ Select Tool - Click to select shapes';
     } else if (this.currentTool === 'line') {
       this.canvas.style.cursor = 'crosshair';
-      toolStatus.textContent = '📏 Line Tool - Click and drag to draw';
+      toolStatus.textContent = '📏 Line Tool - Click and drag to draw. Lines automatically fill when closed!';
     } else if (this.currentTool === 'rectangle') {
       this.canvas.style.cursor = 'crosshair';
       toolStatus.textContent = '⬜ Rectangle Tool - Click and drag to draw';
@@ -475,6 +475,191 @@ class VectorDrawingApp {
     };
     
     this.shapes.push(shape);
+    
+    // Check for closed shape if drawing lines
+    if (this.currentTool === 'line') {
+      this.checkForClosedShape(shape);
+    }
+  }
+  
+  checkForClosedShape(newLine) {
+    console.log('Checking for closed shape with new line:', newLine);
+    const tolerance = 25; // Increased tolerance for grid snapping
+    
+    // Find all lines that share endpoints with the new line
+    const connectedLines = this.findConnectedLines(newLine, tolerance);
+    console.log('Found connected lines:', connectedLines.length);
+    
+    if (connectedLines.length >= 2) { // Need at least 3 total lines (including new one) for a triangle
+      console.log('Attempting to build closed path...');
+      const closedPath = this.buildClosedPath(newLine, connectedLines, tolerance);
+      
+      if (closedPath && closedPath.points && closedPath.points.length >= 3) {
+        console.log('Closed path found with', closedPath.points.length, 'points');
+        // Convert to filled polygon
+        this.convertLinesToPolygon(closedPath, newLine.strokeColor, newLine.fillColor, newLine.strokeWidth);
+      } else {
+        console.log('No valid closed path found');
+      }
+    } else {
+      console.log('Not enough connected lines for a closed shape');
+    }
+  }
+  
+  findConnectedLines(targetLine, tolerance) {
+    const connected = [];
+    console.log('Looking for lines connected to:', targetLine);
+    console.log('Current shapes:', this.shapes.length);
+    
+    for (const shape of this.shapes) {
+      if (shape.type !== 'line' || shape === targetLine) continue;
+      
+      console.log('Checking line:', shape);
+      
+      // Check if any endpoint of this line is close to any endpoint of target line
+      const endpoints = [
+        { line: shape, point: { x: shape.startX, y: shape.startY }, isStart: true },
+        { line: shape, point: { x: shape.endX, y: shape.endY }, isStart: false }
+      ];
+      
+      const targetEndpoints = [
+        { x: targetLine.startX, y: targetLine.startY },
+        { x: targetLine.endX, y: targetLine.endY }
+      ];
+      
+      for (const endpoint of endpoints) {
+        for (const targetEndpoint of targetEndpoints) {
+          const distance = Math.sqrt(
+            (endpoint.point.x - targetEndpoint.x) ** 2 + 
+            (endpoint.point.y - targetEndpoint.y) ** 2
+          );
+          
+          console.log(`Distance between (${endpoint.point.x}, ${endpoint.point.y}) and (${targetEndpoint.x}, ${targetEndpoint.y}): ${distance}`);
+          
+          if (distance <= tolerance) {
+            console.log('Found connection!');
+            connected.push({
+              line: shape,
+              connectionPoint: endpoint.point,
+              isStart: endpoint.isStart,
+              targetPoint: targetEndpoint
+            });
+            break;
+          }
+        }
+      }
+    }
+    
+    console.log('Total connected lines found:', connected.length);
+    return connected;
+  }
+  
+  buildClosedPath(startLine, connectedLines, tolerance) {
+    console.log('Building closed path starting from line:', startLine);
+    console.log('Available connected lines:', connectedLines);
+    
+    // Build a path by following connected lines
+    const usedLines = new Set([startLine]);
+    const path = [
+      { x: startLine.startX, y: startLine.startY },
+      { x: startLine.endX, y: startLine.endY }
+    ];
+    
+    let currentEndpoint = { x: startLine.endX, y: startLine.endY };
+    let iterations = 0;
+    const maxIterations = 20; // Prevent infinite loops
+    
+    console.log('Starting path build from endpoint:', currentEndpoint);
+    
+    while (iterations < maxIterations) {
+      iterations++;
+      console.log(`Iteration ${iterations}, current endpoint:`, currentEndpoint);
+      
+      // Find next connected line
+      let nextConnection = null;
+      
+      for (const connection of connectedLines) {
+        if (usedLines.has(connection.line)) {
+          console.log('Skipping already used line');
+          continue;
+        }
+        
+        const distance = Math.sqrt(
+          (connection.connectionPoint.x - currentEndpoint.x) ** 2 + 
+          (connection.connectionPoint.y - currentEndpoint.y) ** 2
+        );
+        
+        console.log(`Checking connection distance: ${distance} (tolerance: ${tolerance})`);
+        
+        if (distance <= tolerance) {
+          nextConnection = connection;
+          console.log('Found next connection:', nextConnection);
+          break;
+        }
+      }
+      
+      if (!nextConnection) {
+        console.log('No more connections found');
+        break;
+      }
+      
+      // Add the line to our path
+      usedLines.add(nextConnection.line);
+      
+      // Determine the other endpoint of this line
+      const otherEndpoint = nextConnection.isStart ? 
+        { x: nextConnection.line.endX, y: nextConnection.line.endY } :
+        { x: nextConnection.line.startX, y: nextConnection.line.startY };
+      
+      console.log('Adding point to path:', otherEndpoint);
+      path.push(otherEndpoint);
+      currentEndpoint = otherEndpoint;
+      
+      // Check if we've closed the shape (back to start)
+      const distanceToStart = Math.sqrt(
+        (currentEndpoint.x - startLine.startX) ** 2 + 
+        (currentEndpoint.y - startLine.startY) ** 2
+      );
+      
+      console.log(`Distance to start: ${distanceToStart}, used lines: ${usedLines.size}`);
+      
+      if (distanceToStart <= tolerance && usedLines.size >= 3) {
+        console.log('Shape closed! Removing duplicate end point');
+        // Remove the duplicate start point
+        path.pop();
+        return { points: path, lines: Array.from(usedLines) };
+      }
+    }
+    
+    console.log('Failed to build closed path');
+    return null; // No closed path found
+  }
+  
+  convertLinesToPolygon(closedPath, strokeColor, fillColor, strokeWidth) {
+    // Create a new filled polygon
+    const polygon = {
+      type: 'polygon',
+      points: closedPath.points,
+      strokeColor: strokeColor,
+      fillColor: fillColor,
+      strokeWidth: strokeWidth,
+      fillEnabled: true // Always enable fill for closed shapes
+    };
+    
+    // Remove the original lines
+    this.shapes = this.shapes.filter(shape => !closedPath.lines.includes(shape));
+    
+    // Add the polygon
+    this.shapes.push(polygon);
+    
+    // Show feedback to user
+    const toolStatus = document.getElementById('tool-status');
+    if (toolStatus) {
+      toolStatus.textContent = `✨ Closed shape detected! Converted ${closedPath.lines.length} lines to filled polygon`;
+      setTimeout(() => {
+        this.updateToolStatus();
+      }, 2000);
+    }
   }
 
   addPolygon() {
@@ -2162,6 +2347,7 @@ class VectorDrawingApp {
         
         <h5>2. Draw Shapes</h5>
         <p>Click and drag to create lines, rectangles, and circles. For polygons, click to place points and double-click to finish.</p>
+        <p><strong>Smart Lines:</strong> When drawing lines that connect to form a closed shape, they automatically convert to a filled polygon!</p>
         
         <h5>3. Customize Properties</h5>
         <p>Use the Settings menu to adjust stroke color, fill color, stroke width, and other properties.</p>
@@ -2181,7 +2367,7 @@ class VectorDrawingApp {
     const aboutContent = `
       <div style="text-align: center; line-height: 1.6;">
         <h3>Vector2Godot</h3>
-        <p><strong>Version 1.0.0</strong></p>
+        <p><strong>Version 1.1.4</strong></p>
         
         <p>A modern vector drawing tool that generates Godot Engine code.</p>
         

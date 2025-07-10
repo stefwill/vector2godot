@@ -1,6 +1,6 @@
 # Vector Drawing App for Godot
 
-![Version](https://img.shields.io/badge/version-1.1.3-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.5-blue.svg)
 
 A modern web-based vector drawing application that allows users to draw simple shapes and generates the corresponding Godot `_draw()` function code.
 
@@ -67,7 +67,7 @@ npm run dist:mac      # macOS only
 ### Project Structure
 ```
 vector-app/
-├── index.html          # Main HTML file
+├── index.html         # Main HTML file
 ├── main.js            # Application logic
 ├── style.css          # Styling
 ├── vite.config.js     # Vite configuration

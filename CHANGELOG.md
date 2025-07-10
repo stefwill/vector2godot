@@ -5,6 +5,19 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-07-10
+
+### Fixed
+- **Build Process**: Fixed white screen issue in built application by correcting build scripts
+  - Added missing Vite build step (`npm run build:vite`) to compile web assets before Electron packaging
+  - Updated all build scripts (build, build:win, build:linux, build:mac) to include Vite compilation
+  - Fixed asset path resolution in production builds
+  - Ensures `dist/` folder is properly created with compiled HTML, CSS, and JavaScript
+  - Application now displays correctly when built and packaged
+
+### Changed
+- **Build Scripts**: Enhanced build process reliability and consistency across platforms
+
 ## [1.1.2] - 2025-07-10
 
 ### Fixed

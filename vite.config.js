@@ -1,4 +1,4 @@
-// Vector2Godot Vite Config - v1.1.2
+// Vector2Godot Vite Config - v1.1.3
 import { defineConfig } from 'vite'
 
 export default defineConfig({

@@ -7,7 +7,11 @@ yarn-error.log*
 # Build outputs
 dist/
 build/
-release/
+release/*.yml
+release/*.yaml
+release/linux-unpacked/
+release/mac-unpacked/
+release/win-unpacked/
 out/
 
 # Electron build artifacts

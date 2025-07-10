@@ -5,6 +5,38 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.9] - 2025-07-10
+
+### Fixed
+- Improved closed shape detection algorithm to properly detect and convert closed shapes drawn with the line tool
+- Fixed path building logic to check all available lines instead of just initially connected ones
+- Enhanced connection tolerance calculation based on grid size and snap settings
+- Cleaned up debug logging for better production readiness
+
+### Changed
+- Streamlined closed shape detection code for better performance and maintainability
+- Removed excessive debug logging while keeping essential debugging information
+
+## [1.1.8] - 2025-07-10
+
+### Fixed
+- **Closed Shape Detection**: Successfully fixed the line-to-polygon conversion feature
+  - Refactored buildClosedPath function to check ALL lines in the shapes array instead of just initial connected lines
+  - Improved connection detection algorithm to properly build complete closed paths
+  - Fixed path building logic to correctly identify and connect line endpoints
+  - Closed shapes (triangles, squares, etc.) drawn with the line tool now automatically convert to filled polygons
+  - Cleaned up debug logging while maintaining essential feedback
+
+## [1.1.7] - 2025-07-10
+
+### Fixed
+- **Closed Shape Detection Bug**: Attempted to fix issues with line-to-polygon conversion
+  - Made tolerance dynamic based on grid size and snap-to-grid settings
+  - Enhanced connected line finding algorithm to build complete connection graphs
+  - Added redrawCanvas() and updateCodeOutput() calls to convertLinesToPolygon method
+  - Improved debugging output with enhanced console logging
+  - Issue still requires further investigation as conversion is not working properly
+
 ## [1.1.6] - 2025-07-10
 
 ### Changed

@@ -57,13 +57,13 @@ class VectorDrawingApp {
     this.polygonPoints = [];
     
     // Grid properties
-    this.gridSize = 20;
+    this.gridSize = 10;
     this.showGrid = true;
     this.snapToGrid = true;
     
     // Canvas dimensions
-    this.canvasWidth = 1280;
-    this.canvasHeight = 720;
+    this.canvasWidth = 256;
+    this.canvasHeight = 256;
     
     // Zoom and pan properties
     this.zoom = 1;
@@ -106,18 +106,18 @@ class VectorDrawingApp {
       { id: 'stroke-width', type: 'range', value: '2', min: '1', max: '10' },
       { id: 'fill-color', type: 'color', value: '#ffffff' },
       { id: 'fill-enabled', type: 'checkbox', checked: true },
-      { id: 'canvas-width', type: 'range', value: '1280', min: '200', max: '1600' },
-      { id: 'canvas-height', type: 'range', value: '720', min: '150', max: '1200' },
-      { id: 'grid-size', type: 'range', value: '20', min: '5', max: '50' },
+      { id: 'canvas-width', type: 'range', value: '256', min: '200', max: '1600' },
+      { id: 'canvas-height', type: 'range', value: '256', min: '150', max: '1200' },
+      { id: 'grid-size', type: 'range', value: '10', min: '5', max: '50' },
       { id: 'show-grid', type: 'checkbox', checked: true },
       { id: 'snap-to-grid', type: 'checkbox', checked: true }
     ];
 
     const hiddenSpans = [
       { id: 'stroke-width-value', textContent: '2' },
-      { id: 'canvas-width-value', textContent: '1280' },
-      { id: 'canvas-height-value', textContent: '720' },
-      { id: 'grid-size-value', textContent: '20' },
+      { id: 'canvas-width-value', textContent: '256' },
+      { id: 'canvas-height-value', textContent: '256' },
+      { id: 'grid-size-value', textContent: '10' },
       { id: 'zoom-level', textContent: '100%' },
       { id: 'tool-status', textContent: 'Line Tool - Click and drag to draw' }
     ];
@@ -409,9 +409,9 @@ class VectorDrawingApp {
   
   resetSettings() {
     const defaultSettings = {
-      canvasWidth: 1280,
-      canvasHeight: 720,
-      gridSize: 20,
+      canvasWidth: 256,
+      canvasHeight: 256,
+      gridSize: 10,
       showGrid: true,
       snapToGrid: true,
       strokeWidth: 2,
@@ -432,7 +432,8 @@ class VectorDrawingApp {
       toolStatus.textContent = '✋ Select Tool - Click to select shapes';
     } else if (this.currentTool === 'line') {
       this.canvas.style.cursor = 'crosshair';
-      toolStatus.textContent = '📏 Line Tool - Click and drag to draw. Lines automatically fill when closed!';
+      const tolerance = this.snapToGrid ? this.gridSize / 2 : Math.max(15, this.gridSize);
+      toolStatus.textContent = `📏 Line Tool - Draw connected lines to form shapes! (Connection tolerance: ${tolerance}px)`;
     } else if (this.currentTool === 'rectangle') {
       this.canvas.style.cursor = 'crosshair';
       toolStatus.textContent = '⬜ Rectangle Tool - Click and drag to draw';
@@ -483,39 +484,36 @@ class VectorDrawingApp {
   }
   
   checkForClosedShape(newLine) {
-    console.log('Checking for closed shape with new line:', newLine);
-    const tolerance = 25; // Increased tolerance for grid snapping
+    // Dynamic tolerance based on grid size and snap settings
+    let tolerance;
+    if (this.snapToGrid) {
+      // If snapping to grid, use half grid size as tolerance (should be very precise)
+      tolerance = this.gridSize / 2;
+    } else {
+      // If not snapping to grid, use a larger tolerance for manual drawing
+      tolerance = Math.max(15, this.gridSize);
+    }
     
     // Find all lines that share endpoints with the new line
     const connectedLines = this.findConnectedLines(newLine, tolerance);
-    console.log('Found connected lines:', connectedLines.length);
     
-    if (connectedLines.length >= 2) { // Need at least 3 total lines (including new one) for a triangle
-      console.log('Attempting to build closed path...');
+    if (connectedLines.length >= 1) {
       const closedPath = this.buildClosedPath(newLine, connectedLines, tolerance);
       
       if (closedPath && closedPath.points && closedPath.points.length >= 3) {
-        console.log('Closed path found with', closedPath.points.length, 'points');
         // Convert to filled polygon
         this.convertLinesToPolygon(closedPath, newLine.strokeColor, newLine.fillColor, newLine.strokeWidth);
-      } else {
-        console.log('No valid closed path found');
       }
-    } else {
-      console.log('Not enough connected lines for a closed shape');
     }
   }
   
   findConnectedLines(targetLine, tolerance) {
     const connected = [];
-    console.log('Looking for lines connected to:', targetLine);
-    console.log('Current shapes:', this.shapes.length);
     
-    for (const shape of this.shapes) {
-      if (shape.type !== 'line' || shape === targetLine) continue;
-      
-      console.log('Checking line:', shape);
-      
+    // Get all lines (excluding the target line)
+    const allLines = this.shapes.filter(shape => shape.type === 'line' && shape !== targetLine);
+    
+    for (const shape of allLines) {
       // Check if any endpoint of this line is close to any endpoint of target line
       const endpoints = [
         { line: shape, point: { x: shape.startX, y: shape.startY }, isStart: true },
@@ -527,6 +525,7 @@ class VectorDrawingApp {
         { x: targetLine.endX, y: targetLine.endY }
       ];
       
+      let connectionFound = false;
       for (const endpoint of endpoints) {
         for (const targetEndpoint of targetEndpoints) {
           const distance = Math.sqrt(
@@ -534,29 +533,69 @@ class VectorDrawingApp {
             (endpoint.point.y - targetEndpoint.y) ** 2
           );
           
-          console.log(`Distance between (${endpoint.point.x}, ${endpoint.point.y}) and (${targetEndpoint.x}, ${targetEndpoint.y}): ${distance}`);
-          
           if (distance <= tolerance) {
-            console.log('Found connection!');
             connected.push({
               line: shape,
               connectionPoint: endpoint.point,
               isStart: endpoint.isStart,
               targetPoint: targetEndpoint
             });
+            connectionFound = true;
             break;
+          }
+        }
+        if (connectionFound) break;
+      }
+    }
+    
+    // Also include other lines that might form part of the closed path
+    // by checking if they connect to any of the already connected lines
+    const additionalLines = [];
+    for (const connectedLine of connected) {
+      for (const shape of allLines) {
+        if (connected.some(c => c.line === shape) || additionalLines.some(a => a.line === shape)) continue;
+        
+        const shapeEndpoints = [
+          { x: shape.startX, y: shape.startY },
+          { x: shape.endX, y: shape.endY }
+        ];
+        
+        const connectedEndpoints = [
+          { x: connectedLine.line.startX, y: connectedLine.line.startY },
+          { x: connectedLine.line.endX, y: connectedLine.line.endY }
+        ];
+        
+        for (const shapeEndpoint of shapeEndpoints) {
+          for (const connectedEndpoint of connectedEndpoints) {
+            const distance = Math.sqrt(
+              (shapeEndpoint.x - connectedEndpoint.x) ** 2 + 
+              (shapeEndpoint.y - connectedEndpoint.y) ** 2
+            );
+            
+            if (distance <= tolerance) {
+              additionalLines.push({
+                line: shape,
+                connectionPoint: shapeEndpoint,
+                isStart: shapeEndpoint.x === shape.startX && shapeEndpoint.y === shape.startY,
+                targetPoint: connectedEndpoint
+              });
+              break;
+            }
           }
         }
       }
     }
     
-    console.log('Total connected lines found:', connected.length);
+    connected.push(...additionalLines);
     return connected;
   }
   
   buildClosedPath(startLine, connectedLines, tolerance) {
     console.log('Building closed path starting from line:', startLine);
-    console.log('Available connected lines:', connectedLines);
+    
+    // Get all line shapes to check for connections
+    const allLines = this.shapes.filter(shape => shape.type === 'line');
+    console.log('All available lines:', allLines.length);
     
     // Build a path by following connected lines
     const usedLines = new Set([startLine]);
@@ -573,27 +612,44 @@ class VectorDrawingApp {
     
     while (iterations < maxIterations) {
       iterations++;
-      console.log(`Iteration ${iterations}, current endpoint:`, currentEndpoint);
       
-      // Find next connected line
+      // Find next connected line by checking ALL lines, not just connectedLines
       let nextConnection = null;
       
-      for (const connection of connectedLines) {
-        if (usedLines.has(connection.line)) {
-          console.log('Skipping already used line');
+      for (const line of allLines) {
+        if (usedLines.has(line)) {
           continue;
         }
         
-        const distance = Math.sqrt(
-          (connection.connectionPoint.x - currentEndpoint.x) ** 2 + 
-          (connection.connectionPoint.y - currentEndpoint.y) ** 2
+        // Check both endpoints of this line
+        const lineStart = { x: line.startX, y: line.startY };
+        const lineEnd = { x: line.endX, y: line.endY };
+        
+        const distanceToStart = Math.sqrt(
+          (lineStart.x - currentEndpoint.x) ** 2 + 
+          (lineStart.y - currentEndpoint.y) ** 2
         );
         
-        console.log(`Checking connection distance: ${distance} (tolerance: ${tolerance})`);
+        const distanceToEnd = Math.sqrt(
+          (lineEnd.x - currentEndpoint.x) ** 2 + 
+          (lineEnd.y - currentEndpoint.y) ** 2
+        );
         
-        if (distance <= tolerance) {
-          nextConnection = connection;
-          console.log('Found next connection:', nextConnection);
+        if (distanceToStart <= tolerance) {
+          nextConnection = {
+            line: line,
+            connectionPoint: lineStart,
+            isStart: true,
+            otherEndpoint: lineEnd
+          };
+          break;
+        } else if (distanceToEnd <= tolerance) {
+          nextConnection = {
+            line: line,
+            connectionPoint: lineEnd,
+            isStart: false,
+            otherEndpoint: lineStart
+          };
           break;
         }
       }
@@ -606,14 +662,9 @@ class VectorDrawingApp {
       // Add the line to our path
       usedLines.add(nextConnection.line);
       
-      // Determine the other endpoint of this line
-      const otherEndpoint = nextConnection.isStart ? 
-        { x: nextConnection.line.endX, y: nextConnection.line.endY } :
-        { x: nextConnection.line.startX, y: nextConnection.line.startY };
-      
-      console.log('Adding point to path:', otherEndpoint);
-      path.push(otherEndpoint);
-      currentEndpoint = otherEndpoint;
+      console.log('Adding point to path:', nextConnection.otherEndpoint);
+      path.push(nextConnection.otherEndpoint);
+      currentEndpoint = nextConnection.otherEndpoint;
       
       // Check if we've closed the shape (back to start)
       const distanceToStart = Math.sqrt(
@@ -624,7 +675,7 @@ class VectorDrawingApp {
       console.log(`Distance to start: ${distanceToStart}, used lines: ${usedLines.size}`);
       
       if (distanceToStart <= tolerance && usedLines.size >= 3) {
-        console.log('Shape closed! Removing duplicate end point');
+        console.log('🎉 Shape closed! Converting to polygon');
         // Remove the duplicate start point
         path.pop();
         return { points: path, lines: Array.from(usedLines) };
@@ -651,6 +702,10 @@ class VectorDrawingApp {
     
     // Add the polygon
     this.shapes.push(polygon);
+    
+    // Redraw canvas and update code output
+    this.redrawCanvas();
+    this.updateCodeOutput();
     
     // Show feedback to user
     const toolStatus = document.getElementById('tool-status');
@@ -940,28 +995,35 @@ class VectorDrawingApp {
   }
   
   handleMouseUp(e) {
-    console.log('Mouse up event triggered, isDrawing:', this.isDrawing, 'currentTool:', this.currentTool);
+    console.log('🖱️ Mouse up event triggered, isDrawing:', this.isDrawing, 'currentTool:', this.currentTool);
     
     if (this.isPanning) {
+      console.log('⚠️ Panning mode, returning early');
       this.isPanning = false;
       return;
     }
     
     if (this.isEditing) {
+      console.log('⚠️ Editing mode, returning early');
       this.isEditing = false;
       this.editingPoint = null;
       return;
     }
     
     if (!this.isDrawing || this.currentTool === 'polygon' || this.currentTool === 'select' || this.currentTool === 'eraser') {
+      console.log('⚠️ Early return condition met:', {
+        isDrawing: this.isDrawing,
+        currentTool: this.currentTool,
+        willReturn: true
+      });
       return;
     }
     
     const pos = this.getMousePos(e);
-    console.log('Adding shape from:', this.startX, this.startY, 'to:', pos.x, pos.y);
+    console.log('✅ About to add shape from:', this.startX, this.startY, 'to:', pos.x, pos.y);
     this.addShape(this.startX, this.startY, pos.x, pos.y);
     this.isDrawing = false;
-    console.log('Total shapes after adding:', this.shapes.length);
+    console.log('📊 Total shapes after adding:', this.shapes.length);
     this.redrawCanvas();
     this.updateCodeOutput();
   }

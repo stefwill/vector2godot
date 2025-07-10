@@ -1,4 +1,4 @@
-/* Modern Vector2Godot UI Styles - v1.0.9 */
+/* Modern Vector2Godot UI Styles - v1.1.0 */
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -1139,4 +1139,150 @@ body {
 .input-slider-group input[type="number"]:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: -2px;
+}
+
+/* Splash Screen Styles */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+.splash-screen.fade-out {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+
+.splash-content {
+  text-align: center;
+  color: white;
+  animation: splashFadeIn 1s ease-out;
+}
+
+.splash-icon {
+  margin-bottom: var(--space-6);
+  animation: splashIconFloat 2s ease-in-out infinite;
+}
+
+.splash-logo {
+  width: 128px;
+  height: 128px;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  animation: splashIconGlow 2s ease-in-out infinite alternate;
+}
+
+.splash-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  margin: 0 0 var(--space-8) 0;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  animation: splashTextSlide 1s ease-out 0.3s both;
+}
+
+.splash-loading {
+  margin-top: var(--space-8);
+  animation: splashLoadingFade 1s ease-out 0.6s both;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  margin: 0 auto var(--space-4) auto;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: var(--font-size-base);
+  opacity: 0.9;
+  margin: 0;
+  font-weight: 500;
+}
+
+.app-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes splashFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes splashIconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes splashIconGlow {
+  from {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  }
+  to {
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+  }
+}
+
+@keyframes splashTextSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes splashLoadingFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Theme-aware splash screen */
+[data-theme="dark"] .splash-screen {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+[data-theme="dark"] .splash-content {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .loading-spinner {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-top-color: var(--primary-color);
 }

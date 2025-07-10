@@ -5,6 +5,22 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-01-24
+
+### Added
+- **Splash Screen**: Added beautiful animated splash screen featuring the app icon and name
+  - Large, centered Vector2Godot logo with smooth fade-in animation
+  - App name displayed below the icon with elegant typography
+  - Loading spinner and status text for user feedback
+  - Theme-aware design that adapts to light/dark mode
+  - Minimum display time of 1.5 seconds for smooth user experience
+  - Smooth fade-out transition revealing the main application
+  - Responsive design that works across different screen sizes
+
+### Changed
+- **Version Bump**: Updated version to 1.1.0 across all project files
+- **User Experience**: Enhanced app startup experience with professional branding
+
 ## [1.0.9] - 2025-07-10
 
 ### Changed

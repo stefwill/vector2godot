@@ -1,6 +1,6 @@
 # Vector Drawing App for Godot
 
-![Version](https://img.shields.io/badge/version-1.0.9-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 
 A modern web-based vector drawing application that allows users to draw simple shapes and generates the corresponding Godot `_draw()` function code.
 
@@ -10,6 +10,8 @@ A modern web-based vector drawing application that allows users to draw simple s
 - **Real-time Code Generation**: Automatically generates Godot-compatible `_draw()` function code
 - **Property Controls**: Customize stroke color, fill color, stroke width, and fill options
 - **Modern UI**: Clean, responsive interface with a beautiful gradient background
+- **Splash Screen**: Professional app loading experience with animated branding
+- **Dark Mode Support**: Complete theme switching with persistent user preferences
 - **Copy Functionality**: One-click copy of generated code to clipboard
 
 ## How to Use

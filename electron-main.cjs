@@ -2,6 +2,9 @@ const { app, BrowserWindow, Menu, dialog, shell } = require('electron');
 const path = require('path');
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
+// App version
+const APP_VERSION = '1.0.9';
+
 function createWindow() {
   // Create the browser window
   const mainWindow = new BrowserWindow({
@@ -154,7 +157,7 @@ function createMenu() {
               type: 'info',
               title: 'About Vector Drawing App',
               message: 'Vector Drawing App for Godot',
-              detail: 'Version 1.0.0\n\nCreate vector shapes and generate Godot _draw() function code.\n\nBuilt with Electron and modern web technologies.',
+              detail: `Version ${APP_VERSION}\n\nCreate vector shapes and generate Godot _draw() function code.\n\nBuilt with Electron and modern web technologies.`,
               icon: path.join(__dirname, 'assets/icon.png'),
               buttons: ['OK', 'Visit GitHub'],
               defaultId: 0

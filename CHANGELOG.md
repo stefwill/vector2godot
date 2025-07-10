@@ -5,6 +5,25 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2025-07-10
+
+### Changed
+- **Version Management**: Updated version number across all project files
+- **App Icon Spacing**: Added vertical spacing around header icon while maintaining 64×64 size
+- **Documentation**: Added version badges and meta tags for better version tracking
+
+## [1.0.8] - 2025-07-10
+
+### Changed
+- **App Icon Spacing**: Added top and bottom spacing around the app icon in header
+- Improved visual balance and professional appearance of header layout
+
+## [1.0.7] - 2025-07-10
+
+### Added
+- **App Icon**: Added Vector2Godot icon to header with hover effects
+- Enhanced visual branding and professional appearance
+
 ## [1.0.6] - 2025-07-10
 
 ### Fixed

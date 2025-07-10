@@ -36,7 +36,7 @@ ls -lh release/ | grep -E "\.(AppImage|exe|dmg)$" || echo "No build artifacts fo
 
 echo ""
 echo "🎯 To run the Linux AppImage:"
-echo "   ./release/Vector2Godot-1.0.0.AppImage"
+echo "   ./release/Vector2Godot-1.0.9.AppImage"
 echo ""
 echo "🎯 To run the Windows executable:"
-echo "   wine release/Vector2Godot\\ 1.0.0.exe"
+echo "   wine release/Vector2Godot\\ 1.0.9.exe"

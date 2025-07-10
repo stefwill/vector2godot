@@ -10,12 +10,7 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 - Include comments and documentation for complex logic.
 - Prioritize readability and maintainability.
 - Adhere to the project's coding style and conventions.
-
-- After each completed chat, increment the version number by 0.0.1
-- Use semantic versioning (MAJOR.MINOR.PATCH).
-- For example, if the current version is 1.0.0, the next version should be 1.0.1.
-- If the version is 1.0.1, the next version should be 1.0.2.
-- If the version is 1.0.2, the next version should be 1.0.3. etc.
+- Use consistent indentation (2 spaces).
 
 # Domain Knowledge
 - The project is a desktop application built with Electron and Vite.
@@ -51,8 +46,18 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 - The version number should be included in the `index.html` file.
 - The version number should be included in the `style.css` file.
 - The version number should be included in the `electron-main.cjs` file.
-- The version number should be included in the `electron-preload.cjs` file.
 - The version number should be included in the `vite.config.ts` file.
-- The version number should be included in the `tsconfig.json` file.
 - The version number should be included in the `CHANGELOG.md` file.
 - The version number should be included in the `LICENSE` file.
+
+# Changelog
+- The changelog should be updated after each chat.
+- The changelog should follow the format:
+  ```
+  ## [VERSION] - YYYY-MM-DD
+
+  - Description of changes made
+  - Any relevant notes or information
+  ```
+- The changelog should be included in the `CHANGELOG.md` file.
+- The changelog should be included in the `README.md` file.

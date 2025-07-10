@@ -1,3 +1,4 @@
+// Vector2Godot Vite Config - v1.0.9
 import { defineConfig } from 'vite'
 
 export default defineConfig({

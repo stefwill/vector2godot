@@ -39,7 +39,6 @@ const splash = new SplashScreen();
 
 // Load theme immediately to prevent flash
 const savedTheme = localStorage.getItem('vector2godot-theme') || 'light';
-console.log('Loading saved theme:', savedTheme);
 document.documentElement.setAttribute('data-theme', savedTheme);
 
 class VectorDrawingApp {
@@ -84,7 +83,6 @@ class VectorDrawingApp {
   }
   
   init() {
-    console.log('Vector2Godot app initializing...');
     this.createHiddenInputs(); // Create hidden inputs for properties
     this.setupEventListeners();
     this.setupMenuEventListeners();
@@ -591,11 +589,8 @@ class VectorDrawingApp {
   }
   
   buildClosedPath(startLine, connectedLines, tolerance) {
-    console.log('Building closed path starting from line:', startLine);
-    
     // Get all line shapes to check for connections
     const allLines = this.shapes.filter(shape => shape.type === 'line');
-    console.log('All available lines:', allLines.length);
     
     // Build a path by following connected lines
     const usedLines = new Set([startLine]);
@@ -607,8 +602,6 @@ class VectorDrawingApp {
     let currentEndpoint = { x: startLine.endX, y: startLine.endY };
     let iterations = 0;
     const maxIterations = 20; // Prevent infinite loops
-    
-    console.log('Starting path build from endpoint:', currentEndpoint);
     
     while (iterations < maxIterations) {
       iterations++;
@@ -655,14 +648,12 @@ class VectorDrawingApp {
       }
       
       if (!nextConnection) {
-        console.log('No more connections found');
         break;
       }
       
       // Add the line to our path
       usedLines.add(nextConnection.line);
       
-      console.log('Adding point to path:', nextConnection.otherEndpoint);
       path.push(nextConnection.otherEndpoint);
       currentEndpoint = nextConnection.otherEndpoint;
       
@@ -672,17 +663,13 @@ class VectorDrawingApp {
         (currentEndpoint.y - startLine.startY) ** 2
       );
       
-      console.log(`Distance to start: ${distanceToStart}, used lines: ${usedLines.size}`);
-      
       if (distanceToStart <= tolerance && usedLines.size >= 3) {
-        console.log('🎉 Shape closed! Converting to polygon');
         // Remove the duplicate start point
         path.pop();
         return { points: path, lines: Array.from(usedLines) };
       }
     }
     
-    console.log('Failed to build closed path');
     return null; // No closed path found
   }
   
@@ -888,9 +875,7 @@ class VectorDrawingApp {
   }
   
   handleMouseDown(e) {
-    console.log('Mouse down event triggered, current tool:', this.currentTool);
     const pos = this.getMousePos(e);
-    console.log('Mouse position:', pos);
     
     if (this.currentTool === 'select') {
       // Check if clicking on a control point
@@ -935,7 +920,6 @@ class VectorDrawingApp {
     this.startX = pos.x;
     this.startY = pos.y;
     this.isDrawing = true;
-    console.log('Started drawing at:', this.startX, this.startY);
     
     // Update tool status to show we're drawing
     const toolStatus = document.getElementById('tool-status');
@@ -995,35 +979,24 @@ class VectorDrawingApp {
   }
   
   handleMouseUp(e) {
-    console.log('🖱️ Mouse up event triggered, isDrawing:', this.isDrawing, 'currentTool:', this.currentTool);
-    
     if (this.isPanning) {
-      console.log('⚠️ Panning mode, returning early');
       this.isPanning = false;
       return;
     }
     
     if (this.isEditing) {
-      console.log('⚠️ Editing mode, returning early');
       this.isEditing = false;
       this.editingPoint = null;
       return;
     }
     
     if (!this.isDrawing || this.currentTool === 'polygon' || this.currentTool === 'select' || this.currentTool === 'eraser') {
-      console.log('⚠️ Early return condition met:', {
-        isDrawing: this.isDrawing,
-        currentTool: this.currentTool,
-        willReturn: true
-      });
       return;
     }
     
     const pos = this.getMousePos(e);
-    console.log('✅ About to add shape from:', this.startX, this.startY, 'to:', pos.x, pos.y);
     this.addShape(this.startX, this.startY, pos.x, pos.y);
     this.isDrawing = false;
-    console.log('📊 Total shapes after adding:', this.shapes.length);
     this.redrawCanvas();
     this.updateCodeOutput();
   }
@@ -1310,8 +1283,6 @@ class VectorDrawingApp {
   }
   
   drawPreview(startX, startY, endX, endY) {
-    console.log('Drawing preview from', startX, startY, 'to', endX, endY, 'with tool:', this.currentTool);
-    
     const strokeColorEl = document.getElementById('stroke-color');
     const fillColorEl = document.getElementById('fill-color');
     const strokeWidthEl = document.getElementById('stroke-width');
@@ -1321,8 +1292,6 @@ class VectorDrawingApp {
     const fillColor = fillColorEl ? fillColorEl.value : '#ffffff';
     const strokeWidth = strokeWidthEl ? parseInt(strokeWidthEl.value) : 2;
     const fillEnabled = fillEnabledEl ? fillEnabledEl.checked : false;
-    
-    console.log('Preview properties:', { strokeColor, fillColor, strokeWidth, fillEnabled });
     
     this.ctx.save();
     this.ctx.setTransform(this.zoom, 0, 0, this.zoom, this.offsetX, this.offsetY);
@@ -1453,7 +1422,6 @@ class VectorDrawingApp {
   }
 
   redrawCanvas() {
-    console.log('Redrawing canvas with', this.shapes.length, 'shapes');
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
     this.ctx.save();
@@ -1463,7 +1431,6 @@ class VectorDrawingApp {
     this.drawGrid();
     
     this.shapes.forEach((shape, index) => {
-      console.log('Drawing shape', index, ':', shape);
       // Highlight selected shape
       if (shape === this.selectedShape) {
         this.ctx.save();
@@ -2542,7 +2509,6 @@ class VectorDrawingApp {
   }
 
   setTheme(theme) {
-    console.log('Setting theme to:', theme);
     document.documentElement.setAttribute('data-theme', theme);
     
     // Update canvas background for better contrast

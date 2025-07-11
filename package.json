@@ -49,7 +49,12 @@
       }
     },
     "win": {
-      "target": "portable",
+      "target": [
+        {
+          "target": "zip",
+          "arch": ["x64"]
+        }
+      ],
       "icon": "assets/icon.png",
       "artifactName": "${productName}-${version}.${ext}"
     },

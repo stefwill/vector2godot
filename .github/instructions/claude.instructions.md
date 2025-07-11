@@ -40,7 +40,10 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 # Versioning
 - The version number should be updated after each chat.
 - The version number should follow semantic versioning (MAJOR.MINOR.PATCH).
-- The version number should be incremented by 0.0.1 after each chat.
+- The version number should be in the format `x.y.z`, where:
+  - `x` is the major version (incremented for breaking changes)
+  - `y` is the minor version (incremented for new features)
+  - `z` is the patch version (incremented for bug fixes) 
 - The version number should be included in the commit message.
 - The version number should be included in the `package.json` file.
 - The version number should be included in the `build-all.sh` script.

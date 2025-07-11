@@ -9,6 +9,7 @@ dist/
 build/
 release/
 out/
+.github/instructions/
 
 # Electron build artifacts
 *.exe

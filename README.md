@@ -1,18 +1,48 @@
-# Vector Drawing App for Godot
+# Vector2Godot - Vector Drawing Tool for Game Development
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)
 
-A modern web-based vector drawing application that allows users to draw simple shapes and generates the corresponding Godot `_draw()` function code.
+Vector2Godot is a powerful, modern vector drawing application specifically designed for game developers working with the Godot Engine. This intuitive tool bridges the gap between visual design and code implementation by allowing you to draw vector shapes with precision and automatically generating the corresponding Godot `_draw()` function code. Whether you're prototyping UI elements, creating simple graphics, or designing geometric patterns for your games, Vector2Godot streamlines your workflow by providing real-time code generation, eliminating the need to manually write complex drawing coordinates and function calls.
 
 ## Features
 
-- **Drawing Tools**: Select, Line, Rectangle, Circle, and Polygon tools
-- **Real-time Code Generation**: Automatically generates Godot-compatible `_draw()` function code
-- **Property Controls**: Customize stroke color, fill color, stroke width, and fill options
-- **Modern UI**: Clean, responsive interface with a beautiful gradient background
-- **Splash Screen**: Professional app loading experience with animated branding
-- **Dark Mode Support**: Complete theme switching with persistent user preferences
-- **Copy Functionality**: One-click copy of generated code to clipboard
+- **Comprehensive Drawing Tools**: 
+  - **Select Tool**: Click to select and edit existing shapes
+  - **Line Tool**: Draw connected lines with automatic closed shape detection
+  - **Rectangle Tool**: Create rectangles and squares with precise dimensions
+  - **Circle Tool**: Draw circles and ellipses with adjustable radius
+  - **Polygon Tool**: Create complex polygons by clicking points
+  - **Eraser Tool**: Remove vertices from shapes by clicking on them
+
+- **Smart Shape Detection**: Automatically converts connected lines into filled polygons when you draw closed shapes
+
+- **Real-time Code Generation**: Instantly generates optimized Godot `_draw()` function code as you draw
+
+- **Advanced Canvas Controls**:
+  - **Zoom & Pan**: Navigate large drawings with mouse wheel zoom and pan functionality
+  - **Grid System**: Customizable grid with snap-to-grid functionality for precise alignment
+  - **Flexible Canvas Size**: Adjustable canvas dimensions (default 256x256 with 10px grid)
+
+- **Professional UI/UX**:
+  - **Modern Interface**: Clean, responsive design with intuitive tool placement
+  - **Splash Screen**: Professional loading experience with animated branding
+  - **Dark/Light Mode**: Complete theme switching with persistent user preferences
+  - **Collapsible Panels**: Bottom code panel can be collapsed for more drawing space
+
+- **Customization Options**:
+  - **Color Controls**: Full color picker for stroke and fill colors
+  - **Stroke Width**: Adjustable line thickness from 1-10 pixels
+  - **Fill Options**: Toggle fill on/off for shapes
+  - **Settings Persistence**: All preferences saved to local storage
+
+- **Developer-Friendly Features**:
+  - **One-Click Copy**: Copy generated code directly to clipboard
+  - **Clean Code Output**: Properly formatted, commented Godot code
+  - **Shape Properties**: View and modify shape properties in real-time
+  - **Keyboard Shortcuts**: Efficient workflow with keyboard shortcuts
+
+- **Cross-Platform Compatibility**:
+  - **Desktop App**: Available as standalone Electron application for Windows and Linux
 
 ## How to Use
 
@@ -33,6 +63,34 @@ The app generates proper Godot code using these drawing functions:
 - `draw_rect()` for rectangles  
 - `draw_circle()` and `draw_arc()` for circles
 - `draw_colored_polygon()` and `draw_line()` for polygons
+
+## Download
+
+Ready to use Vector2Godot? Download the latest version for your platform:
+
+### Desktop Applications
+- **Windows**: [Vector2Godot 1.2.5.exe](https://github.com/stefwill/vector2godot/releases/latest/download/Vector2Godot-1.2.5.exe)
+- **Linux**: [Vector2Godot-1.2.5.AppImage](https://github.com/stefwill/vector2godot/releases/latest/download/Vector2Godot-1.2.5.AppImage)
+
+### Installation Instructions
+
+#### Windows
+1. Download the `.exe` file
+2. Double-click to run the installer
+3. Follow the installation wizard
+4. Launch from Start Menu or Desktop shortcut
+
+#### Linux
+1. Download the `.AppImage` file
+2. Make it executable: `chmod +x Vector2Godot-1.2.5.AppImage`
+3. Run directly: `./Vector2Godot-1.2.5.AppImage`
+4. Optional: Integrate with system using AppImageLauncher
+
+### System Requirements
+- **Operating System**: Windows 10+ or Linux (64-bit)
+- **RAM**: 4GB minimum, 8GB recommended
+- **Storage**: 200MB available space
+- **Graphics**: Hardware acceleration support recommended
 
 ## Development
 
@@ -61,7 +119,6 @@ npm run electron-dev
 npm run dist          # All platforms
 npm run dist:win      # Windows only
 npm run dist:linux    # Linux only
-npm run dist:mac      # macOS only
 ```
 
 ### Project Structure

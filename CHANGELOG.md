@@ -5,6 +5,59 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2025-07-11
+
+### Changed
+- Removed macOS as a supported platform
+- Updated cross-platform compatibility to focus on Windows and Linux only
+- Removed macOS download link and installation instructions
+- Updated system requirements to exclude macOS
+
+### Documentation
+- Streamlined supported platforms to Windows and Linux
+- Updated development build scripts to remove macOS references
+- Clarified platform availability in all documentation
+
+## [1.2.4] - 2025-07-11
+
+### Changed
+- Removed web application references from documentation
+- Updated README.md to focus exclusively on desktop executables
+- Removed browser launch link and web app installation instructions
+- Enhanced cross-platform compatibility description to include macOS
+
+### Documentation
+- Streamlined download section to show only desktop applications
+- Updated installation instructions to focus on executable downloads
+- Clarified that the application is desktop-only (no web version)
+
+## [1.2.2] - 2025-07-11
+
+### Added
+- Download section with direct links to desktop applications for all platforms
+- Installation instructions for Windows, Linux, and macOS
+- System requirements specifications
+- Detailed step-by-step installation guides for each platform
+
+### Documentation
+- Enhanced README.md with comprehensive download and installation information
+- Added platform-specific executable download links
+- Included system requirements and hardware recommendations
+
+## [1.2.1] - 2025-07-11
+
+### Changed
+- Updated README.md with comprehensive introduction paragraph
+- Enhanced features list with detailed descriptions of all current capabilities
+- Improved documentation to better reflect the application's full functionality
+- Added descriptions for smart shape detection, canvas controls, and cross-platform compatibility
+
+### Documentation
+- Expanded feature descriptions to include all drawing tools and their capabilities
+- Added information about zoom, pan, grid system, and canvas controls
+- Documented theme switching, settings persistence, and keyboard shortcuts
+- Clarified cross-platform compatibility and deployment options
+
 ## [1.2.0] - 2025-07-10
 
 ### Changed

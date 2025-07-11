@@ -424,29 +424,30 @@ class VectorDrawingApp {
   
   updateCursor() {
     const toolStatus = document.getElementById('tool-status');
+    const panHint = this.zoom > 1 ? ' • Hold middle mouse to pan' : '';
     
     if (this.currentTool === 'select') {
       this.canvas.style.cursor = 'default';
-      toolStatus.textContent = '✋ Select Tool - Click to select shapes';
+      toolStatus.textContent = `✋ Select Tool - Click to select shapes${panHint}`;
     } else if (this.currentTool === 'line') {
       this.canvas.style.cursor = 'crosshair';
       const tolerance = this.snapToGrid ? this.gridSize / 2 : Math.max(15, this.gridSize);
-      toolStatus.textContent = `📏 Line Tool - Draw connected lines to form shapes! (Connection tolerance: ${tolerance}px)`;
+      toolStatus.textContent = `📏 Line Tool - Draw connected lines to form shapes! (Connection tolerance: ${tolerance}px)${panHint}`;
     } else if (this.currentTool === 'rectangle') {
       this.canvas.style.cursor = 'crosshair';
-      toolStatus.textContent = '⬜ Rectangle Tool - Click and drag to draw';
+      toolStatus.textContent = `⬜ Rectangle Tool - Click and drag to draw${panHint}`;
     } else if (this.currentTool === 'circle') {
       this.canvas.style.cursor = 'crosshair';
-      toolStatus.textContent = '⭕ Circle Tool - Click and drag to draw';
+      toolStatus.textContent = `⭕ Circle Tool - Click and drag to draw${panHint}`;
     } else if (this.currentTool === 'polygon') {
       this.canvas.style.cursor = 'crosshair';
-      toolStatus.textContent = '🔶 Polygon Tool - Click to add points, double-click to finish';
+      toolStatus.textContent = `🔶 Polygon Tool - Click to add points, double-click to finish${panHint}`;
     } else if (this.currentTool === 'eraser') {
       this.canvas.style.cursor = 'pointer';
-      toolStatus.textContent = '🗑️ Eraser Tool - Click on vertices to remove them';
+      toolStatus.textContent = `🗑️ Eraser Tool - Click on vertices to remove them${panHint}`;
     } else {
       this.canvas.style.cursor = 'crosshair';
-      toolStatus.textContent = '🎨 Drawing Tool Active';
+      toolStatus.textContent = `🎨 Drawing Tool Active${panHint}`;
     }
   }
 
@@ -877,6 +878,16 @@ class VectorDrawingApp {
   handleMouseDown(e) {
     const pos = this.getMousePos(e);
     
+    // Handle middle mouse button for panning
+    if (e.button === 1) { // Middle mouse button
+      e.preventDefault();
+      this.isPanning = true;
+      this.panStartX = e.clientX;
+      this.panStartY = e.clientY;
+      this.canvas.style.cursor = 'grabbing';
+      return;
+    }
+    
     if (this.currentTool === 'select') {
       // Check if clicking on a control point
       const controlPoint = this.getControlPointAt(pos.x, pos.y);
@@ -931,8 +942,16 @@ class VectorDrawingApp {
   handleMouseMove(e) {
     const pos = this.getMousePos(e);
     
-    // Handle panning
-    if (this.isPanning) {
+    // Handle middle mouse button panning
+    if (this.isPanning && e.buttons === 4) { // Middle mouse button is held
+      this.offsetX = e.clientX - this.panStartX;
+      this.offsetY = e.clientY - this.panStartY;
+      this.redrawCanvas();
+      return;
+    }
+    
+    // Handle regular panning (shift+click or right-click)
+    if (this.isPanning && (e.buttons === 1 || e.buttons === 2)) {
       this.offsetX = e.clientX - this.panStartX;
       this.offsetY = e.clientY - this.panStartY;
       this.redrawCanvas();
@@ -979,6 +998,13 @@ class VectorDrawingApp {
   }
   
   handleMouseUp(e) {
+    // Handle middle mouse button release for panning
+    if (e.button === 1 && this.isPanning) { // Middle mouse button
+      this.isPanning = false;
+      this.canvas.style.cursor = this.currentTool === 'select' ? 'default' : 'crosshair';
+      return;
+    }
+    
     if (this.isPanning) {
       this.isPanning = false;
       return;
@@ -1070,6 +1096,7 @@ class VectorDrawingApp {
     this.canvas.style.transform = '';
     this.cssScale = 1; // Reset CSS scale
     this.redrawCanvas();
+    this.updateCursor(); // Update cursor to show/hide pan hint
     document.getElementById('zoom-level').textContent = Math.round(this.zoom * 100) + '%';
   }
   

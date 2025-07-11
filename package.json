@@ -1,7 +1,7 @@
 {
   "name": "vector2godot",
   "private": true,
-  "version": "1.2.5",
+  "version": "1.3.9",
   "type": "module",
   "description": "Vector2Godot - Create vector shapes and generate Godot _draw() function code",
   "author": "Stefan Willoughby",
@@ -9,15 +9,17 @@
   "homepage": "./",
   "scripts": {
     "dev": "concurrently \"npm run dev:vite\" \"wait-on http://localhost:5173 && NODE_ENV=development electron .\"",
-    "dev:vite": "vite --port 5173",
+    "dev:vite": "node --max-old-space-size=4096 node_modules/.bin/vite --port 5173",
     "build": "npm run build:prepare && npm run build:vite && npm run build:electron",
     "build:prepare": "npm install --production=false",
-    "build:vite": "vite build",
+    "build:vite": "node --max-old-space-size=4096 node_modules/.bin/vite build",
     "build:electron": "electron-builder",
     "build:win": "npm run build:vite && electron-builder --win",
     "build:linux": "npm run build:vite && electron-builder --linux",
     "build:mac": "npm run build:vite && electron-builder --mac",
-    "clean": "rm -rf dist/ build/ release/ out/",
+    "clean": "npm run archive && npm run clean:current",
+    "clean:current": "rm -rf dist/ build/ release/ out/",
+    "archive": "mkdir -p archive && if [ -d release ]; then found=false && for file in release/*.exe release/*.AppImage release/*.dmg; do if [ -f \"$file\" ]; then found=true && mv \"$file\" archive/; fi; done && if [ \"$found\" = true ]; then echo \"📦 Archived previous builds to archive/\"; else echo \"📦 No previous builds to archive\"; fi; else echo \"📦 No release folder to archive\"; fi",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -48,7 +50,8 @@
     },
     "win": {
       "target": "portable",
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.png",
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "mac": {
       "target": "dmg",

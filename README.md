@@ -1,6 +1,6 @@
 # Vector2Godot - Vector Drawing Tool for Game Development
 
-![Version](https://img.shields.io/badge/version-1.2.5-blue.svg)
+![Version](https://img.shields.io/badge/version-1.3.5-blue.svg)
 
 Vector2Godot is a powerful, modern vector drawing application specifically designed for game developers working with the Godot Engine. This intuitive tool bridges the gap between visual design and code implementation by allowing you to draw vector shapes with precision and automatically generating the corresponding Godot `_draw()` function code. Whether you're prototyping UI elements, creating simple graphics, or designing geometric patterns for your games, Vector2Godot streamlines your workflow by providing real-time code generation, eliminating the need to manually write complex drawing coordinates and function calls.
 
@@ -37,6 +37,7 @@ Vector2Godot is a powerful, modern vector drawing application specifically desig
 
 - **Developer-Friendly Features**:
   - **One-Click Copy**: Copy generated code directly to clipboard
+  - **SVG Import**: Import SVG files and convert them to Godot drawing code
   - **Clean Code Output**: Properly formatted, commented Godot code
   - **Shape Properties**: View and modify shape properties in real-time
   - **Keyboard Shortcuts**: Efficient workflow with keyboard shortcuts
@@ -52,9 +53,10 @@ Vector2Godot is a powerful, modern vector drawing application specifically desig
    - **Rectangle**: Click and drag to create a rectangle
    - **Circle**: Click and drag to create a circle
    - **Polygon**: Click to add points, double-click to finish
-3. **Customize Properties**: Adjust colors, stroke width, and fill options
-4. **View Generated Code**: The Godot `_draw()` code appears in the bottom panel
-5. **Copy Code**: Click "Copy Code" to copy the generated code to your clipboard
+3. **Import SVG**: Click the "Import SVG" button to load and convert SVG files
+4. **Customize Properties**: Adjust colors, stroke width, and fill options
+5. **View Generated Code**: The Godot `_draw()` code appears in the bottom panel
+6. **Copy Code**: Click "Copy Code" to copy the generated code to your clipboard
 
 ## Generated Code
 
@@ -69,8 +71,8 @@ The app generates proper Godot code using these drawing functions:
 Ready to use Vector2Godot? Download the latest version for your platform:
 
 ### Desktop Applications
-- **Windows**: [Vector2Godot 1.2.5.exe](https://github.com/stefwill/vector2godot/releases/latest/download/Vector2Godot-1.2.5.exe)
-- **Linux**: [Vector2Godot-1.2.5.AppImage](https://github.com/stefwill/vector2godot/releases/latest/download/Vector2Godot-1.2.5.AppImage)
+- **Windows**: [Vector2Godot-1.3.5.exe](https://github.com/stefwill/vector2godot/releases/download/v1.3.5/Vector2Godot-1.3.5.exe)
+- **Linux**: [Vector2Godot-1.3.5.AppImage](https://github.com/stefwill/vector2godot/releases/download/v1.3.5/Vector2Godot-1.3.5.AppImage)
 
 ### Installation Instructions
 
@@ -82,8 +84,8 @@ Ready to use Vector2Godot? Download the latest version for your platform:
 
 #### Linux
 1. Download the `.AppImage` file
-2. Make it executable: `chmod +x Vector2Godot-1.2.5.AppImage`
-3. Run directly: `./Vector2Godot-1.2.5.AppImage`
+2. Make it executable: `chmod +x Vector2Godot-1.3.5.AppImage`
+3. Run directly: `./Vector2Godot-1.3.5.AppImage`
 4. Optional: Integrate with system using AppImageLauncher
 
 ### System Requirements

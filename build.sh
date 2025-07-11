@@ -2,6 +2,10 @@
 
 echo "🚀 Building Vector Drawing App for Linux..."
 
+# Archive previous builds
+echo "📦 Archiving previous builds..."
+npm run archive
+
 # Build the web app
 echo "📦 Building web application..."
 npm run build
@@ -19,6 +23,8 @@ if [ $? -eq 0 ]; then
         echo ""
         echo "Available files:"
         ls -la release/
+        echo ""
+        echo "📦 Previous builds archived in 'archive/' folder"
     else
         echo "❌ Electron build failed!"
         exit 1

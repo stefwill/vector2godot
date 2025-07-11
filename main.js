@@ -79,6 +79,12 @@ class VectorDrawingApp {
     this.editingPoint = null;
     this.controlPoints = [];
     
+    // Shape dragging properties
+    this.isDragging = false;
+    this.dragStartX = 0;
+    this.dragStartY = 0;
+    this.dragOffset = { x: 0, y: 0 };
+    
     this.init();
   }
   
@@ -195,6 +201,12 @@ class VectorDrawingApp {
     const fitCanvasBtn = document.getElementById('fit-canvas');
     if (fitCanvasBtn) {
       fitCanvasBtn.addEventListener('click', this.fitCanvasToContainer.bind(this));
+    }
+    
+    // Import SVG button
+    const importSVGBtn = document.getElementById('import-svg-btn');
+    if (importSVGBtn) {
+      importSVGBtn.addEventListener('click', this.importSVG.bind(this));
     }
     
     // Bottom panel toggle
@@ -902,6 +914,13 @@ class VectorDrawingApp {
       if (clickedShape) {
         this.selectedShape = clickedShape;
         this.generateControlPoints(clickedShape);
+        
+        // Start dragging the shape
+        this.isDragging = true;
+        this.dragStartX = pos.x;
+        this.dragStartY = pos.y;
+        this.dragOffset = { x: 0, y: 0 };
+        
         this.redrawCanvas();
         return;
       }
@@ -967,6 +986,18 @@ class VectorDrawingApp {
       return;
     }
     
+    // Handle shape dragging
+    if (this.isDragging && this.selectedShape) {
+      const deltaX = pos.x - this.dragStartX;
+      const deltaY = pos.y - this.dragStartY;
+      
+      this.moveShape(this.selectedShape, deltaX, deltaY);
+      this.generateControlPoints(this.selectedShape);
+      this.redrawCanvas();
+      this.updateCodeOutput();
+      return;
+    }
+    
     // Handle polygon preview line
     if (this.currentTool === 'polygon' && this.polygonPoints.length > 0) {
       this.redrawCanvas();
@@ -1013,6 +1044,14 @@ class VectorDrawingApp {
     if (this.isEditing) {
       this.isEditing = false;
       this.editingPoint = null;
+      return;
+    }
+    
+    if (this.isDragging) {
+      this.isDragging = false;
+      this.dragStartX = 0;
+      this.dragStartY = 0;
+      this.dragOffset = { x: 0, y: 0 };
       return;
     }
     
@@ -1549,28 +1588,28 @@ class VectorDrawingApp {
   }
   
   // Simple GDScript syntax highlighting
-  highlightGDScript(code) {
-    return code
-      .replace(/\b(func|var|const|class|extends|export|onready|signal|enum|static|return|if|else|elif|for|while|match|pass|break|continue|true|false|null|self|super)\b/g, '<span style="color: #569cd6;">$1</span>')
-      .replace(/\b(Vector2|Rect2|Color|TAU|PI)\b/g, '<span style="color: #4ec9b0;">$1</span>')
-      .replace(/\b(draw_line|draw_rect|draw_circle|draw_arc|draw_colored_polygon)\b/g, '<span style="color: #dcdcaa;">$1</span>')
-      .replace(/#[^\n]*/g, '<span style="color: #6a9955;">$&</span>')
-      .replace(/\b\d+\.?\d*\b/g, '<span style="color: #b5cea8;">$&</span>')
-      .replace(/"[^"]*"/g, '<span style="color: #ce9178;">$&</span>');
-  }
-  
   updateCodeOutput() {
-    let code = `func _draw():\n\t# Canvas size: ${this.canvasWidth}x${this.canvasHeight}\n`;
+    let code = `func _draw():\n`;
     
     if (this.shapes.length === 0) {
       code += '\t# No shapes to draw\n\tpass';
     } else {
+      // Calculate bounding box for scaling and centering
+      const bounds = this.calculateBounds();
+      const scaleFactorValue = this.calculateScaleFactor(bounds);
+      const centerOffset = this.calculateCenterOffset(bounds, scaleFactorValue);
+      
+      // Add scaling and centering comments
+      code += `\t# Scale and center the coordinates for appropriate size\n`;
+      code += `\tvar scale_factor = ${scaleFactorValue}  # Scale factor for coordinates\n`;
+      code += `\tvar center_offset = Vector2(${centerOffset.x.toFixed(0)}, ${centerOffset.y.toFixed(0)})  # Center the shape at origin\n\n`;
+      
       this.shapes.forEach((shape, index) => {
         code += `\t# Shape ${index + 1}: ${shape.type}\n`;
         
         switch (shape.type) {
           case 'line':
-            code += `\tdraw_line(Vector2(${shape.startX}, ${shape.startY}), Vector2(${shape.endX}, ${shape.endY}), ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n\n`;
+            code += `\tdraw_line(Vector2(${shape.startX.toFixed(0)}, ${shape.startY.toFixed(0)}) * scale_factor + center_offset, Vector2(${shape.endX.toFixed(0)}, ${shape.endY.toFixed(0)}) * scale_factor + center_offset, ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n\n`;
             break;
             
           case 'rectangle':
@@ -1580,9 +1619,15 @@ class VectorDrawingApp {
             const rectHeight = Math.abs(shape.endY - shape.startY);
             
             if (shape.fillEnabled) {
-              code += `\tdraw_rect(Rect2(${rectX}, ${rectY}, ${rectWidth}, ${rectHeight}), ${this.colorToGodot(shape.fillColor)})\n`;
+              code += `\t# Draw filled rectangle\n`;
+              code += `\tvar rect_pos = Vector2(${rectX.toFixed(0)}, ${rectY.toFixed(0)}) * scale_factor + center_offset\n`;
+              code += `\tvar rect_size = Vector2(${rectWidth.toFixed(0)}, ${rectHeight.toFixed(0)}) * scale_factor\n`;
+              code += `\tdraw_rect(Rect2(rect_pos, rect_size), ${this.colorToGodot(shape.fillColor)})\n\n`;
             }
-            code += `\tdraw_rect(Rect2(${rectX}, ${rectY}, ${rectWidth}, ${rectHeight}), ${this.colorToGodot(shape.strokeColor)}, false, ${shape.strokeWidth})\n\n`;
+            code += `\t# Draw rectangle outline\n`;
+            code += `\tvar rect_pos = Vector2(${rectX.toFixed(0)}, ${rectY.toFixed(0)}) * scale_factor + center_offset\n`;
+            code += `\tvar rect_size = Vector2(${rectWidth.toFixed(0)}, ${rectHeight.toFixed(0)}) * scale_factor\n`;
+            code += `\tdraw_rect(Rect2(rect_pos, rect_size), ${this.colorToGodot(shape.strokeColor)}, false, ${shape.strokeWidth})\n\n`;
             break;
             
           case 'circle':
@@ -1591,35 +1636,43 @@ class VectorDrawingApp {
             const radius = Math.sqrt((shape.endX - shape.startX) ** 2 + (shape.endY - shape.startY) ** 2) / 2;
             
             if (shape.fillEnabled) {
-              code += `\tdraw_circle(Vector2(${centerX.toFixed(1)}, ${centerY.toFixed(1)}), ${radius.toFixed(1)}, ${this.colorToGodot(shape.fillColor)})\n`;
+              code += `\t# Draw filled circle\n`;
+              code += `\tvar circle_center = Vector2(${centerX.toFixed(0)}, ${centerY.toFixed(0)}) * scale_factor + center_offset\n`;
+              code += `\tvar circle_radius = ${radius.toFixed(0)} * scale_factor\n`;
+              code += `\tdraw_circle(circle_center, circle_radius, ${this.colorToGodot(shape.fillColor)})\n\n`;
             }
-            code += `\tdraw_arc(Vector2(${centerX.toFixed(1)}, ${centerY.toFixed(1)}), ${radius.toFixed(1)}, 0, TAU, 64, ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n\n`;
+            code += `\t# Draw circle outline\n`;
+            code += `\tvar circle_center = Vector2(${centerX.toFixed(0)}, ${centerY.toFixed(0)}) * scale_factor + center_offset\n`;
+            code += `\tvar circle_radius = ${radius.toFixed(0)} * scale_factor\n`;
+            code += `\tdraw_arc(circle_center, circle_radius, 0, TAU, 64, ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n\n`;
             break;
             
           case 'polygon':
             if (shape.points.length >= 3) {
-              const points = shape.points.map(p => `Vector2(${p.x}, ${p.y})`).join(', ');
+              code += `\t# Original shape points scaled and centered\n`;
+              const points = shape.points.map(p => `\t\tVector2(${p.x.toFixed(0)}, ${p.y.toFixed(0)}) * scale_factor + center_offset`).join(',\n');
+              code += `\tvar points = PackedVector2Array([\n${points}\n\t])\n\n`;
               
               if (shape.fillEnabled) {
-                code += `\tdraw_colored_polygon([${points}], ${this.colorToGodot(shape.fillColor)})\n`;
+                code += `\t# Draw filled polygon\n`;
+                code += `\tdraw_colored_polygon(points, ${this.colorToGodot(shape.fillColor)})\n\n`;
               }
               
-              // Draw polygon outline by drawing lines between consecutive points
-              for (let i = 0; i < shape.points.length; i++) {
-                const current = shape.points[i];
-                const next = shape.points[(i + 1) % shape.points.length];
-                code += `\tdraw_line(Vector2(${current.x}, ${current.y}), Vector2(${next.x}, ${next.y}), ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n`;
-              }
-              code += '\n';
+              // Draw polygon outline
+              code += `\t# Draw outline\n`;
+              code += `\tfor i in range(points.size() - 1):\n`;
+              code += `\t\tdraw_line(points[i], points[i + 1], ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n\n`;
+              code += `\t# Close the shape by connecting last point to first\n`;
+              code += `\tdraw_line(points[points.size() - 1], points[0], ${this.colorToGodot(shape.strokeColor)}, ${shape.strokeWidth})\n\n`;
             }
             break;
         }
       });
     }
     
-    // Update the code element content with syntax highlighting
+    // Update the code element content without syntax highlighting
     if (this.codeOutput) {
-      this.codeOutput.innerHTML = this.highlightGDScript(code);
+      this.codeOutput.textContent = code;
     }
   }
   
@@ -1724,16 +1777,19 @@ class VectorDrawingApp {
             maxY = Math.max(maxY, shape.startY, shape.endY);
             break;
           case 'rectangle':
-            minX = Math.min(minX, shape.x);
-            maxX = Math.max(maxX, shape.x + shape.width);
-            minY = Math.min(minY, shape.y);
-            maxY = Math.max(maxY, shape.y + shape.height);
+            minX = Math.min(minX, shape.startX, shape.endX);
+            maxX = Math.max(maxX, shape.startX, shape.endX);
+            minY = Math.min(minY, shape.startY, shape.endY);
+            maxY = Math.max(maxY, shape.startY, shape.endY);
             break;
           case 'circle':
-            minX = Math.min(minX, shape.x - shape.radius);
-            maxX = Math.max(maxX, shape.x + shape.radius);
-            minY = Math.min(minY, shape.y - shape.radius);
-            maxY = Math.max(maxY, shape.y + shape.radius);
+            const radius = Math.sqrt((shape.endX - shape.startX) ** 2 + (shape.endY - shape.startY) ** 2) / 2;
+            const centerX = (shape.startX + shape.endX) / 2;
+            const centerY = (shape.startY + shape.endY) / 2;
+            minX = Math.min(minX, centerX - radius);
+            maxX = Math.max(maxX, centerX + radius);
+            minY = Math.min(minY, centerY - radius);
+            maxY = Math.max(maxY, centerY + radius);
             break;
           case 'polygon':
             shape.points.forEach(point => {
@@ -2322,7 +2378,7 @@ class VectorDrawingApp {
       modal.style.display = 'none';
     }
   }
-
+  
   showModal(title, content) {
     // Create modal if it doesn't exist
     let modal = document.getElementById('help-modal');
@@ -2446,12 +2502,499 @@ class VectorDrawingApp {
     this.showModal('About Vector2Godot', aboutContent);
   }
 
-  showNotification(message, type = 'info') {
-    // Simple notification system
-    console.log(`${type.toUpperCase()}: ${message}`);
+  // SVG Import functionality
+  setupSVGImport() {
+    const importBtn = document.getElementById('import-svg-btn');
+    if (importBtn) {
+      importBtn.addEventListener('click', this.importSVG.bind(this));
+    }
+  }
+
+  importSVG() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.svg';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        this.processSVGFile(file);
+      }
+    };
+    input.click();
+  }
+
+  processSVGFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const svgContent = e.target.result;
+      this.parseSVG(svgContent);
+    };
+    reader.readAsText(file);
+  }
+
+  parseSVG(svgContent) {
+    try {
+      const parser = new DOMParser();
+      const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+      const svgElement = svgDoc.querySelector('svg');
+      
+      if (!svgElement) {
+        this.showNotification('Invalid SVG file', 'error');
+        return;
+      }
+
+      // Get SVG dimensions
+      const viewBox = svgElement.getAttribute('viewBox');
+      const width = svgElement.getAttribute('width');
+      const height = svgElement.getAttribute('height');
+      
+      let svgWidth = 256, svgHeight = 256;
+      
+      if (viewBox) {
+        const [x, y, w, h] = viewBox.split(' ').map(Number);
+        svgWidth = w;
+        svgHeight = h;
+      } else if (width && height) {
+        svgWidth = parseFloat(width);
+        svgHeight = parseFloat(height);
+      }
+
+      // Scale factor to fit in our canvas
+      const scale = Math.min(this.canvasWidth / svgWidth, this.canvasHeight / svgHeight);
+      
+      // Parse SVG elements
+      this.parseSVGElements(svgElement, scale);
+      
+      this.redrawCanvas();
+      this.updateCodeOutput();
+      this.showNotification('SVG imported successfully!', 'success');
+      
+    } catch (error) {
+      console.error('Error parsing SVG:', error);
+      this.showNotification('Error parsing SVG file', 'error');
+    }
+  }
+
+  parseSVGElements(svgElement, scale = 1) {
+    // Parse different SVG elements
+    this.parseSVGPaths(svgElement, scale);
+    this.parseSVGRects(svgElement, scale);
+    this.parseSVGCircles(svgElement, scale);
+    this.parseSVGEllipses(svgElement, scale);
+    this.parseSVGLines(svgElement, scale);
+    this.parseSVGPolygons(svgElement, scale);
+    this.parseSVGPolylines(svgElement, scale);
+  }
+
+  parseSVGPaths(svgElement, scale) {
+    const paths = svgElement.querySelectorAll('path');
+    paths.forEach((path, index) => {
+      const d = path.getAttribute('d');
+      if (d) {
+        console.log(`Parsing path ${index + 1}:`, d);
+        const pathData = this.parseSVGPathData(d, scale);
+        console.log(`Parsed path data:`, pathData);
+        if (pathData && pathData.length > 0) {
+          const shape = this.createShapeFromSVGPath(pathData, path);
+          console.log(`Created shape:`, shape);
+          if (shape) {
+            this.shapes.push(shape);
+          }
+        }
+      }
+    });
+  }
+
+  parseSVGPathData(d, scale) {
+    // Enhanced path parser - handles basic M, L, C, Q, Z commands
+    const commands = d.match(/[MmLlHhVvCcSsQqTtAaZz][^MmLlHhVvCcSsQqTtAaZz]*/g);
+    const points = [];
+    let currentX = 0, currentY = 0;
+    let startX = 0, startY = 0;
+
+    if (!commands) return [];
+
+    commands.forEach(command => {
+      const type = command[0];
+      const coords = command.slice(1).trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+      
+      switch (type.toLowerCase()) {
+        case 'm': // Move to
+          if (coords.length >= 2) {
+            if (type === 'M') {
+              currentX = coords[0] * scale;
+              currentY = coords[1] * scale;
+            } else {
+              currentX += coords[0] * scale;
+              currentY += coords[1] * scale;
+            }
+            startX = currentX;
+            startY = currentY;
+            points.push({ x: currentX, y: currentY, type: 'move' });
+            
+            // Handle multiple coordinate pairs after M command (implicit line commands)
+            for (let i = 2; i < coords.length; i += 2) {
+              if (i + 1 < coords.length) {
+                if (type === 'M') {
+                  currentX = coords[i] * scale;
+                  currentY = coords[i + 1] * scale;
+                } else {
+                  currentX += coords[i] * scale;
+                  currentY += coords[i + 1] * scale;
+                }
+                points.push({ x: currentX, y: currentY, type: 'line' });
+              }
+            }
+          }
+          break;
+          
+        case 'l': // Line to
+          for (let i = 0; i < coords.length; i += 2) {
+            if (i + 1 < coords.length) {
+              if (type === 'L') {
+                currentX = coords[i] * scale;
+                currentY = coords[i + 1] * scale;
+              } else {
+                currentX += coords[i] * scale;
+                currentY += coords[i + 1] * scale;
+              }
+              points.push({ x: currentX, y: currentY, type: 'line' });
+            }
+          }
+          break;
+          
+        case 'h': // Horizontal line
+          for (let i = 0; i < coords.length; i++) {
+            if (type === 'H') {
+              currentX = coords[i] * scale;
+            } else {
+              currentX += coords[i] * scale;
+            }
+            points.push({ x: currentX, y: currentY, type: 'line' });
+          }
+          break;
+          
+        case 'v': // Vertical line
+          for (let i = 0; i < coords.length; i++) {
+            if (type === 'V') {
+              currentY = coords[i] * scale;
+            } else {
+              currentY += coords[i] * scale;
+            }
+            points.push({ x: currentX, y: currentY, type: 'line' });
+          }
+          break;
+          
+        case 'c': // Cubic Bezier curve - approximate with line segments
+          for (let i = 0; i < coords.length; i += 6) {
+            if (i + 5 < coords.length) {
+              // For simplicity, just use the end point of the curve
+              if (type === 'C') {
+                currentX = coords[i + 4] * scale;
+                currentY = coords[i + 5] * scale;
+              } else {
+                currentX += coords[i + 4] * scale;
+                currentY += coords[i + 5] * scale;
+              }
+              points.push({ x: currentX, y: currentY, type: 'line' });
+            }
+          }
+          break;
+          
+        case 'q': // Quadratic Bezier curve - approximate with line segments
+          for (let i = 0; i < coords.length; i += 4) {
+            if (i + 3 < coords.length) {
+              // For simplicity, just use the end point of the curve
+              if (type === 'Q') {
+                currentX = coords[i + 2] * scale;
+                currentY = coords[i + 3] * scale;
+              } else {
+                currentX += coords[i + 2] * scale;
+                currentY += coords[i + 3] * scale;
+              }
+              points.push({ x: currentX, y: currentY, type: 'line' });
+            }
+          }
+          break;
+          
+        case 'z': // Close path
+          if (points.length > 0 && (currentX !== startX || currentY !== startY)) {
+            points.push({ x: startX, y: startY, type: 'close' });
+          }
+          break;
+      }
+    });
+
+    return points;
+  }
+
+  createShapeFromSVGPath(pathData, svgElement) {
+    const stroke = svgElement.getAttribute('stroke') || '#000000';
+    const fill = svgElement.getAttribute('fill') || 'none';
+    const strokeWidth = parseFloat(svgElement.getAttribute('stroke-width') || '1');
     
-    // You could implement a proper notification system here
-    // For now, we'll just use console.log
+    // Convert path data to polygon points, excluding move commands but including the first point
+    const points = [];
+    let firstPoint = null;
+    
+    pathData.forEach(p => {
+      if (p.type === 'move') {
+        // Include the first move point as the start of the polygon
+        if (!firstPoint) {
+          firstPoint = { x: p.x, y: p.y };
+          points.push(firstPoint);
+        }
+      } else if (p.type === 'line') {
+        // Add line points
+        points.push({ x: p.x, y: p.y });
+      } else if (p.type === 'close') {
+        // Close command - don't add duplicate point if it's the same as the first
+        if (firstPoint && points.length > 0) {
+          const lastPoint = points[points.length - 1];
+          if (Math.abs(lastPoint.x - firstPoint.x) > 1 || Math.abs(lastPoint.y - firstPoint.y) > 1) {
+            points.push({ x: firstPoint.x, y: firstPoint.y });
+          }
+        }
+      }
+    });
+    
+    // Remove duplicate consecutive points
+    const cleanPoints = [];
+    for (let i = 0; i < points.length; i++) {
+      if (i === 0 || 
+          Math.abs(points[i].x - points[i-1].x) > 0.5 || 
+          Math.abs(points[i].y - points[i-1].y) > 0.5) {
+        cleanPoints.push(points[i]);
+      }
+    }
+    
+    if (cleanPoints.length < 3) {
+      // If less than 3 points, create lines
+      if (cleanPoints.length === 2) {
+        return {
+          type: 'line',
+          startX: cleanPoints[0].x,
+          startY: cleanPoints[0].y,
+          endX: cleanPoints[1].x,
+          endY: cleanPoints[1].y,
+          strokeColor: stroke,
+          fillColor: fill,
+          strokeWidth: Math.max(1, strokeWidth),
+          fillEnabled: fill !== 'none'
+        };
+      }
+      return null;
+    }
+
+    return {
+      type: 'polygon',
+      points: cleanPoints,
+      strokeColor: stroke,
+      fillColor: fill !== 'none' ? fill : '#ffffff',
+      strokeWidth: Math.max(1, strokeWidth),
+      fillEnabled: fill !== 'none'
+    };
+  }
+
+  parseSVGRects(svgElement, scale) {
+    const rects = svgElement.querySelectorAll('rect');
+    rects.forEach(rect => {
+      const x = parseFloat(rect.getAttribute('x') || '0') * scale;
+      const y = parseFloat(rect.getAttribute('y') || '0') * scale;
+      const width = parseFloat(rect.getAttribute('width') || '0') * scale;
+      const height = parseFloat(rect.getAttribute('height') || '0') * scale;
+      
+      const stroke = rect.getAttribute('stroke') || '#000000';
+      const fill = rect.getAttribute('fill') || 'none';
+      const strokeWidth = parseFloat(rect.getAttribute('stroke-width') || '1');
+      
+      const shape = {
+        type: 'rectangle',
+        startX: x,
+        startY: y,
+        endX: x + width,
+        endY: y + height,
+        strokeColor: stroke,
+        fillColor: fill !== 'none' ? fill : '#ffffff',
+        strokeWidth: Math.max(1, strokeWidth),
+        fillEnabled: fill !== 'none'
+      };
+      
+      this.shapes.push(shape);
+    });
+  }
+
+  parseSVGCircles(svgElement, scale) {
+    const circles = svgElement.querySelectorAll('circle');
+    circles.forEach(circle => {
+      const cx = parseFloat(circle.getAttribute('cx') || '0') * scale;
+      const cy = parseFloat(circle.getAttribute('cy') || '0') * scale;
+      const r = parseFloat(circle.getAttribute('r') || '0') * scale;
+      
+      const stroke = circle.getAttribute('stroke') || '#000000';
+      const fill = circle.getAttribute('fill') || 'none';
+      const strokeWidth = parseFloat(circle.getAttribute('stroke-width') || '1');
+      
+      const shape = {
+        type: 'circle',
+        startX: cx - r,
+        startY: cy - r,
+        endX: cx + r,
+        endY: cy + r,
+        strokeColor: stroke,
+        fillColor: fill !== 'none' ? fill : '#ffffff',
+        strokeWidth: Math.max(1, strokeWidth),
+        fillEnabled: fill !== 'none'
+      };
+      
+      this.shapes.push(shape);
+    });
+  }
+
+  parseSVGEllipses(svgElement, scale) {
+    const ellipses = svgElement.querySelectorAll('ellipse');
+    ellipses.forEach(ellipse => {
+      const cx = parseFloat(ellipse.getAttribute('cx') || '0') * scale;
+      const cy = parseFloat(ellipse.getAttribute('cy') || '0') * scale;
+      const rx = parseFloat(ellipse.getAttribute('rx') || '0') * scale;
+      const ry = parseFloat(ellipse.getAttribute('ry') || '0') * scale;
+      
+      const stroke = ellipse.getAttribute('stroke') || '#000000';
+      const fill = ellipse.getAttribute('fill') || 'none';
+      const strokeWidth = parseFloat(ellipse.getAttribute('stroke-width') || '1');
+      
+      const shape = {
+        type: 'circle', // We'll treat ellipses as circles for now
+        startX: cx - rx,
+        startY: cy - ry,
+        endX: cx + rx,
+        endY: cy + ry,
+        strokeColor: stroke,
+        fillColor: fill !== 'none' ? fill : '#ffffff',
+        strokeWidth: Math.max(1, strokeWidth),
+        fillEnabled: fill !== 'none'
+      };
+      
+      this.shapes.push(shape);
+    });
+  }
+
+  parseSVGLines(svgElement, scale) {
+    const lines = svgElement.querySelectorAll('line');
+    lines.forEach(line => {
+      const x1 = parseFloat(line.getAttribute('x1') || '0') * scale;
+      const y1 = parseFloat(line.getAttribute('y1') || '0') * scale;
+      const x2 = parseFloat(line.getAttribute('x2') || '0') * scale;
+      const y2 = parseFloat(line.getAttribute('y2') || '0') * scale;
+      
+      const stroke = line.getAttribute('stroke') || '#000000';
+      const strokeWidth = parseFloat(line.getAttribute('stroke-width') || '1');
+      
+      const shape = {
+        type: 'line',
+        startX: x1,
+        startY: y1,
+        endX: x2,
+        endY: y2,
+        strokeColor: stroke,
+        fillColor: '#ffffff',
+        strokeWidth: Math.max(1, strokeWidth),
+        fillEnabled: false
+      };
+      
+      this.shapes.push(shape);
+    });
+  }
+
+  parseSVGPolygons(svgElement, scale) {
+    const polygons = svgElement.querySelectorAll('polygon');
+    polygons.forEach(polygon => {
+      const points = polygon.getAttribute('points');
+      if (points) {
+        const coords = points.trim().split(/[\s,]+/).map(Number);
+        const polygonPoints = [];
+        
+        for (let i = 0; i < coords.length; i += 2) {
+          if (i + 1 < coords.length) {
+            polygonPoints.push({
+              x: coords[i] * scale,
+              y: coords[i + 1] * scale
+            });
+          }
+        }
+        
+        if (polygonPoints.length >= 3) {
+          const stroke = polygon.getAttribute('stroke') || '#000000';
+          const fill = polygon.getAttribute('fill') || 'none';
+          const strokeWidth = parseFloat(polygon.getAttribute('stroke-width') || '1');
+          
+          const shape = {
+            type: 'polygon',
+            points: polygonPoints,
+            strokeColor: stroke,
+            fillColor: fill !== 'none' ? fill : '#ffffff',
+            strokeWidth: Math.max(1, strokeWidth),
+            fillEnabled: fill !== 'none'
+          };
+          
+          this.shapes.push(shape);
+        }
+      }
+    });
+  }
+
+  parseSVGPolylines(svgElement, scale) {
+    const polylines = svgElement.querySelectorAll('polyline');
+    polylines.forEach(polyline => {
+      const points = polyline.getAttribute('points');
+      if (points) {
+        const coords = points.trim().split(/[\s,]+/).map(Number);
+        const polylinePoints = [];
+        
+        for (let i = 0; i < coords.length; i += 2) {
+          if (i + 1 < coords.length) {
+            polylinePoints.push({
+              x: coords[i] * scale,
+              y: coords[i + 1] * scale
+            });
+          }
+        }
+        
+        if (polylinePoints.length >= 2) {
+          const stroke = polyline.getAttribute('stroke') || '#000000';
+          const strokeWidth = parseFloat(polyline.getAttribute('stroke-width') || '1');
+          
+          // Create multiple line segments for polyline
+          for (let i = 0; i < polylinePoints.length - 1; i++) {
+            const shape = {
+              type: 'line',
+              startX: polylinePoints[i].x,
+              startY: polylinePoints[i].y,
+              endX: polylinePoints[i + 1].x,
+              endY: polylinePoints[i + 1].y,
+              strokeColor: stroke,
+              fillColor: '#ffffff',
+              strokeWidth: Math.max(1, strokeWidth),
+              fillEnabled: false
+            };
+            
+            this.shapes.push(shape);
+          }
+        }
+      }
+    });
+  }
+
+  showNotification(message, type = 'info') {
+    const toolStatus = document.getElementById('tool-status');
+    if (toolStatus) {
+      const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+      toolStatus.textContent = `${icon} ${message}`;
+      
+      setTimeout(() => {
+        this.updateToolStatus();
+      }, 3000);
+    }
   }
 
   redraw() {
@@ -2547,6 +3090,86 @@ class VectorDrawingApp {
     
     // Redraw canvas to reflect theme changes
     this.redrawCanvas();
+  }
+
+  calculateBounds() {
+    if (this.shapes.length === 0) {
+      return { minX: 0, maxX: this.canvasWidth, minY: 0, maxY: this.canvasHeight };
+    }
+    
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    
+    this.shapes.forEach(shape => {
+      switch (shape.type) {
+        case 'line':
+          minX = Math.min(minX, shape.startX, shape.endX);
+          maxX = Math.max(maxX, shape.startX, shape.endX);
+          minY = Math.min(minY, shape.startY, shape.endY);
+          maxY = Math.max(maxY, shape.startY, shape.endY);
+          break;
+          
+        case 'rectangle':
+          minX = Math.min(minX, shape.startX, shape.endX);
+          maxX = Math.max(maxX, shape.startX, shape.endX);
+          minY = Math.min(minY, shape.startY, shape.endY);
+          maxY = Math.max(maxY, shape.startY, shape.endY);
+          break;
+          
+        case 'circle':
+          const radius = Math.sqrt((shape.endX - shape.startX) ** 2 + (shape.endY - shape.startY) ** 2) / 2;
+          const centerX = (shape.startX + shape.endX) / 2;
+          const centerY = (shape.startY + shape.endY) / 2;
+          minX = Math.min(minX, centerX - radius);
+          maxX = Math.max(maxX, centerX + radius);
+          minY = Math.min(minY, centerY - radius);
+          maxY = Math.max(maxY, centerY + radius);
+          break;
+          
+        case 'polygon':
+          shape.points.forEach(point => {
+            minX = Math.min(minX, point.x);
+            maxX = Math.max(maxX, point.x);
+            minY = Math.min(minY, point.y);
+            maxY = Math.max(maxY, point.y);
+          });
+          break;
+      }
+    });
+    
+    return { minX, maxX, minY, maxY };
+  }
+  
+  calculateScaleFactor(bounds) {
+    const width = bounds.maxX - bounds.minX;
+    const height = bounds.maxY - bounds.minY;
+    const maxDimension = Math.max(width, height);
+    
+    // Scale to fit within reasonable bounds (similar to enemy size)
+    // Target size around 100-200 pixels for largest dimension
+    const targetSize = 150;
+    const scaleFactor = maxDimension > 0 ? targetSize / maxDimension : 0.175;
+    
+    // Round to 3 decimal places for cleaner code output
+    return Math.round(scaleFactor * 1000) / 1000;
+  }
+  
+  calculateCenterOffset(bounds, scaleFactor) {
+    const width = bounds.maxX - bounds.minX;
+    const height = bounds.maxY - bounds.minY;
+    const centerX = (bounds.minX + bounds.maxX) / 2;
+    const centerY = (bounds.minY + bounds.maxY) / 2;
+    
+    // Calculate offset to center the scaled shape at origin
+    const scaledCenterX = centerX * scaleFactor;
+    const scaledCenterY = centerY * scaleFactor;
+    
+    return {
+      x: -scaledCenterX,
+      y: -scaledCenterY
+    };
   }
 }
 

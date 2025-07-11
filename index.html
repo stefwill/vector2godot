@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="version" content="1.2.5" />
+    <meta name="version" content="1.3.8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vector2Godot - Vector Drawing Tool</title>
@@ -113,6 +113,9 @@
             <button id="copy-code-btn" class="toolbar-btn" title="Copy Code">
               <i class="fas fa-copy"></i>
             </button>
+            <button id="import-svg-btn" class="toolbar-btn" title="Import SVG">
+              <i class="fas fa-upload"></i>
+            </button>
             <button id="clear-btn" class="toolbar-btn" title="Clear Canvas">
               <i class="fas fa-trash"></i>
             </button>
@@ -136,7 +139,7 @@
         </div>
         <div class="panel-content">
           <div class="code-container">
-            <pre><code id="code-output" class="language-gdscript">// Draw shapes to see generated code...</code></pre>
+            <div id="code-output" class="code-display">// Draw shapes to see generated code...</div>
             <button id="copy-code" class="copy-btn" title="Copy to Clipboard">
               <i class="fas fa-copy"></i>
             </button>

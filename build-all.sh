@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# Build script for Vector2Godot
-# This script builds the application for different platforms
+# Build script for Vector2Goecho "🎯 To run the Linux AppImage:"
+echo "   ./release/Vector2Godot-1.3.6.AppImage"
+echo ""
+echo "🎯 To run the Windows executable:"
+echo "   wine release/Vector2Godot-1.3.6.exe" This script builds the application for different platforms
 
 set -e
 
 echo "🚀 Building Vector2Godot..."
 echo "=============================="
 
-# Clean previous builds
-echo "🧹 Cleaning previous builds..."
-npm run clean
+# Archive previous builds instead of deleting them
+echo "📦 Archiving previous builds..."
+npm run archive
+
+# Clean current build directories (but preserve archives)
+echo "🧹 Cleaning build directories..."
+npm run clean:current
 
 # Prepare build environment
 echo "📦 Preparing build environment..."
@@ -36,7 +43,7 @@ ls -lh release/ | grep -E "\.(AppImage|exe|dmg)$" || echo "No build artifacts fo
 
 echo ""
 echo "🎯 To run the Linux AppImage:"
-echo "   ./release/Vector2Godot-1.2.5.AppImage"
+echo "   ./release/Vector2Godot-1.3.5.AppImage"
 echo ""
 echo "🎯 To run the Windows executable:"
-echo "   wine release/Vector2Godot\\ 1.2.5.exe"
+echo "   wine release/Vector2Godot-1.3.5.exe"

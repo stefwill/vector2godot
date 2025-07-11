@@ -5,6 +5,153 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.9] - 2025-07-11
+
+### Added
+- **Major**: Modular architecture implementation - broke down the monolithic main.js into discrete modules
+- New module structure with separate concerns for better maintainability
+- Increased Node.js memory limit with --max-old-space-size=4096 for better performance
+- Comprehensive module documentation in MODULAR_ARCHITECTURE.md
+
+### Changed
+- **Breaking**: Restructured codebase into modular components
+- Created main-new.js as the new entry point (main.js preserved for reference)
+- Separated application logic into 8 focused modules:
+  - SplashScreen.js - Loading screen management
+  - SettingsManager.js - Settings persistence and theme management
+  - ShapeManager.js - Shape operations and geometric calculations
+  - CanvasRenderer.js - Canvas drawing and rendering
+  - EventHandler.js - User input and event management
+  - ToolManager.js - Drawing tools and properties management
+  - CodeGenerator.js - Godot code generation and export formats
+  - UIManager.js - UI controls, modals, and notifications
+- Improved error handling and debugging capabilities
+- Enhanced project structure for better team development
+
+### Technical
+- Improved separation of concerns for better testability
+- Enhanced maintainability through modular design
+- Better memory management for large projects
+- Preserved backward compatibility with existing API
+
+## [1.3.8] - 2025-07-11
+
+### Fixed
+- Fixed corrupted DOCTYPE declaration in index.html causing internal server error
+- Resolved HTML parsing issues that prevented the application from starting
+- Updated version numbers across all files to maintain consistency
+
+## [1.3.7] - 2025-07-11
+
+### Fixed
+- Enhanced SVG path parsing to better handle complex shapes like shields
+- Improved handling of move commands in SVG paths that contain multiple coordinate pairs
+- Added support for cubic and quadratic Bezier curves in SVG paths (approximated as line segments)
+- Fixed duplicate point removal in SVG polygon creation
+- Added debugging output for SVG import troubleshooting
+
+### Removed
+- Cleaned up unused syntax highlighting code
+
+## [1.3.6] - 2025-07-11
+
+### Fixed
+- **Code Output Display**: Fixed syntax highlighting to properly display HTML instead of showing raw HTML tags
+- **Number Formatting**: Rounded coordinate values to whole numbers for cleaner, more readable code
+- **Syntax Highlighting**: Enhanced GDScript syntax highlighting with proper HTML escaping
+- **Code Formatting**: Improved code readability with better spacing and line breaks
+
+### Enhanced
+- **Cleaner Coordinates**: All Vector2 coordinates now display as whole numbers (e.g., `Vector2(45, 163)` instead of `Vector2(45.478625923518344, 162.79559822851883)`)
+- **Better HTML Rendering**: Fixed HTML entity escaping in syntax highlighting to prevent display issues
+- **Improved Keywords**: Added more GDScript keywords to syntax highlighting (in, range, size, PackedVector2Array)
+- **Professional Output**: Code output now matches the requested clean, professional format
+
+### Technical
+- Updated `highlightGDScript()` method with proper HTML escaping and formatting
+- Fixed coordinate precision in `updateCodeOutput()` to use `.toFixed(0)` for whole numbers
+- Enhanced syntax highlighting regex patterns for better keyword recognition
+
+## [1.3.5] - 2025-07-11
+
+### Enhanced
+- **Professional Code Output**: Completely redesigned Godot code generation with proper scaling and centering
+- **Automatic Scaling**: Generated code now includes dynamic scale_factor calculation for appropriate sizing
+- **Smart Centering**: Automatically centers shapes at origin with calculated center_offset
+- **Improved Formatting**: Enhanced code structure with better comments and organized sections
+- **Polygon Enhancement**: Updated polygon code to use PackedVector2Array with proper point formatting
+- **Better Variable Names**: Uses descriptive variable names (rect_pos, rect_size, circle_center, etc.)
+
+### Technical
+- Added `calculateBounds()` method to determine shape boundaries
+- Added `calculateScaleFactor()` method for automatic scaling based on shape dimensions
+- Added `calculateCenterOffset()` method for centering shapes at origin
+- Updated `updateCodeOutput()` to generate production-ready Godot code with proper scaling
+
+### Code Output Features
+- **Scale Factor**: Automatically calculates appropriate scaling (targets ~150px for largest dimension)
+- **Center Offset**: Centers scaled shapes at Vector2.ZERO for easy positioning
+- **Clean Comments**: Descriptive comments explaining each section of generated code
+- **Polygon Arrays**: Uses PackedVector2Array format for better performance
+- **Outline Drawing**: Proper polygon outline drawing with loop closure
+
+## [1.3.4] - 2025-07-11
+
+### Fixed
+- Fixed HTML DOCTYPE declaration corruption that was preventing builds from completing
+- Improved archive script to properly handle filenames with spaces and special characters
+- Fixed Windows executable filename format to use hyphens instead of spaces
+
+### Changed
+- **Windows Build**: Updated Windows executable naming from "Vector2Godot 1.3.4.exe" to "Vector2Godot-1.3.4.exe"
+- **Archive System**: Simplified archive script to store all archived builds directly in `archive/` folder (no timestamped subfolders)
+- **Build Process**: Enhanced archive functionality to properly handle both old and new filename formats
+
+### Technical
+- Added `artifactName` configuration to Windows build settings in package.json
+- Updated archive script to use robust file iteration instead of problematic glob patterns
+- Improved error handling in archive script for files with spaces in names
+
+## [1.3.3] - 2025-07-11
+
+### Added
+- Build script improvements: old *.exe and *.AppImage files are now archived instead of deleted
+- New npm scripts: `archive` (moves old builds to timestamped folders), `clean:current` (cleans only current build dirs)
+- Archive functionality preserves build history in `archive/` folder with timestamps
+
+### Changed
+- Updated build scripts (`build-all.sh`, `build.sh`) to call archive function before building
+- Updated `.gitignore` to exclude `archive/` folder from version control
+- Build process now provides better feedback about archiving previous builds
+
+## [1.3.2] - 2025-07-11
+
+### Fixed
+- Updated download links format to use correct GitHub releases URL structure
+- Changed from `/latest/download/` to `/download/v{version}/` format
+- Fixed corrupted README.md formatting and duplicated content
+- Restored proper document structure and version consistency
+
+### Documentation
+- Corrected all download links to use the proper versioned release URLs
+- Updated installation instructions with correct file names
+- Ensured version consistency across all documentation
+
+## [1.3.1] - 2025-07-11
+
+### Documentation
+- Confirmed SVG import feature is fully implemented and functional
+- SVG import button available in toolbar with upload icon
+- Supports comprehensive SVG element parsing including paths, rectangles, circles, lines, polygons, and polylines
+- Automatic scaling to fit canvas dimensions
+- Real-time Godot code generation for imported SVG elements
+- User feedback with success/error notifications
+
+### Technical
+- Verified all SVG import functionality is properly connected and working
+- Event listeners correctly configured for import button
+- Complete SVG parsing and shape conversion pipeline operational
+
 ## [1.2.5] - 2025-07-11
 
 ### Changed

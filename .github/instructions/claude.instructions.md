@@ -43,17 +43,17 @@ Coding standards, domain knowledge, and preferences that AI should follow.
 - The version number should be in the format `x.y.z`, where:
   - `x` is the major version (incremented for breaking changes)
   - `y` is the minor version (incremented for new features)
-  - `z` is the patch version (incremented for bug fixes) 
+  - `z` is the patch version (incremented for bug fixes)
+- Single source of truth for the version number is the `package.json` file.
+- The version number should be included in the following files:
+  - `README.md`
+  - `index.html`
+  - `style.css`
+  - `electron-main.cjs`
+  - `vite.config.ts`
+  - `CHANGELOG.md`
+  - `LICENSE`
 - The version number should be included in the commit message.
-- The version number should be included in the `package.json` file.
-- The version number should be included in the `build-all.sh` script.
-- The version number should be included in the `README.md` file.
-- The version number should be included in the `index.html` file.
-- The version number should be included in the `style.css` file.
-- The version number should be included in the `electron-main.cjs` file.
-- The version number should be included in the `vite.config.ts` file.
-- The version number should be included in the `CHANGELOG.md` file.
-- The version number should be included in the `LICENSE` file.
 
 # Changelog
 - The changelog should be updated after each chat.

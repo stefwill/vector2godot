@@ -14,7 +14,7 @@ import { UIManager } from './ui/UIManager.js';
 export class VectorDrawingApp {
   constructor() {
     this.isInitialized = false;
-    this.version = '1.3.8';
+    this.version = '1.3.9';
     
     // Initialize modules
     this.settingsManager = new SettingsManager();

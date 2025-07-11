@@ -19,7 +19,7 @@
     "build:mac": "npm run build:vite && electron-builder --mac",
     "clean": "npm run archive && npm run clean:current",
     "clean:current": "rm -rf dist/ build/ release/ out/",
-    "archive": "mkdir -p archive && if [ -d release ]; then found=false && for file in release/*.exe release/*.AppImage release/*.dmg; do if [ -f \"$file\" ]; then found=true && mv \"$file\" archive/; fi; done && if [ \"$found\" = true ]; then echo \"📦 Archived previous builds to archive/\"; else echo \"📦 No previous builds to archive\"; fi; else echo \"📦 No release folder to archive\"; fi",
+    "archive": "mkdir -p archive && if [ -d release ]; then found=false && for file in release/*.exe release/*.AppImage release/*.dmg; do if [ -f \"$file\" ]; then found=true && mv \"$file\" archive/; fi; done && if [ \"$found\" = true ]; then echo \"Archived previous builds to archive/\"; else echo \"No previous builds to archive\"; fi; else echo \"No release folder to archive\"; fi",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {

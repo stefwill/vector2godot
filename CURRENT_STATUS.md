@@ -1,6 +1,6 @@
 # Vector2Godot - Current Status
 
-## ✅ COMPLETED TASKS
+## COMPLETED TASKS
 
 ### 1. UI Improvements
 - **Single Window Layout**: Updated the UI to fit in a single window with proper responsive design
@@ -31,16 +31,16 @@
 - **Documentation**: Added `BUILD.md` with detailed build instructions
 - **Fix Summary**: Created `FIXED.md` documenting all the fixes applied
 
-## 🚀 CURRENT STATE
+## CURRENT STATE
 
 ### Development Mode
-- **Status**: ✅ Working
+- **Status**: Working
 - **Command**: `npm run dev`
 - **Port**: Auto-selected by Vite (currently 5174)
 - **Features**: Hot reload, dev tools, full functionality
 
 ### Production Build
-- **Status**: ✅ Working
+- **Status**: Working
 - **Linux AppImage**: `release/Vector2Godot-1.0.0.AppImage`
 - **Windows Build**: Available via `npm run build:win`
 - **Build Size**: Optimized and functional
@@ -59,9 +59,9 @@
 - **Canvas Controls**: Grid size, snap-to-grid, canvas dimensions
 - **Code Output**: Real-time Godot code generation
 
-## 🧪 TESTING STATUS
+## TESTING STATUS
 
-### ✅ Tested and Working
+### Tested and Working
 - Development mode startup
 - Production build creation
 - AppImage generation
@@ -71,13 +71,13 @@
 - Settings modal
 - Responsive UI layout
 
-### 🔄 Currently Testing
+### Currently Testing
 - Drawing operations (line, rectangle, circle, polygon)
 - Code export functionality
 - Canvas resizing and grid operations
 - Cross-platform compatibility
 
-## 📋 NEXT STEPS
+## NEXT STEPS
 
 1. **Final Testing**: Test all drawing tools and code generation
 2. **Windows Build**: Test Windows executable
@@ -85,7 +85,7 @@
 4. **Polish**: Any final UI/UX improvements
 5. **Documentation**: Update README with latest features
 
-## 🛠️ TECHNICAL DETAILS
+## TECHNICAL DETAILS
 
 ### File Structure
 ```

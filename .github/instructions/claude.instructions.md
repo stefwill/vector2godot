@@ -55,6 +55,15 @@ Coding standards, domain knowledge, and preferences that AI should follow.
   - `LICENSE`
 - The version number should be included in the commit message.
 
+# README
+- The README.md file should include the following sections:
+  - Project title and description
+  - Installation instructions
+  - Usage examples
+  - Contributing guidelines
+  - License information
+  - Don't use emojis in the README.
+
 # Changelog
 - The changelog should be updated after each chat.
 - The changelog should follow the format:

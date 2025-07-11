@@ -1,4 +1,4 @@
-# 🚀 Making Your Vector Drawing App a Standalone Desktop Application
+# Making Your Vector Drawing App a Standalone Desktop Application
 
 Your web-based Vector Drawing App can be turned into a native desktop application using several approaches. Here are the best options:
 

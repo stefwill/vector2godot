@@ -82,13 +82,13 @@ window.addEventListener('unhandledrejection', (e) => {
 
 // Export for debugging
 window.Vector2Godot = {
-  version: '1.3.9',
+  version: '1.4.0',
   getApp: () => app,
   restart: () => {
     location.reload();
   }
 };
 
-console.log('Vector2Godot v1.3.9 - Modular Edition');
+console.log('Vector2Godot v1.4.0 - Modular Edition');
 console.log('Created by Stefan Willoughby');
 console.log('Access the app instance via window.app or window.Vector2Godot.getApp()');

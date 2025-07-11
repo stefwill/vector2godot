@@ -14,14 +14,14 @@ if [ ! -f "package.json" ]; then
 fi
 
 # Check if the new modular files exist
-if [ ! -f "main-new.js" ] || [ ! -d "src" ]; then
+if [ ! -f "main.js" ] || [ ! -d "src" ]; then
     echo "Error: Modular files not found. Please ensure all new files are present."
     exit 1
 fi
 
 echo "Migration Steps:"
-echo "1. Backup current main.js"
-echo "2. Update index.html to use new entry point"
+echo "1. Backup current main.js (if needed)"
+echo "2. Update index.html to use modular main.js"
 echo "3. Test the new modular version"
 echo
 
@@ -50,12 +50,12 @@ if [ -f "index.html" ]; then
         cp index.html index-original.html
         
         # Replace the script tag
-        sed -i 's|src="/main.js"|src="/main-new.js"|g' index.html
+        sed -i 's|src="/main-original.js"|src="/main.js"|g' index.html
         echo "Updated script tag in index.html"
         echo "Backup created: index-original.html"
     else
         echo "Warning: Could not find main.js reference in index.html"
-        echo "   Please manually update the script tag to use '/main-new.js'"
+        echo "   Please manually update the script tag to use '/main.js'"
     fi
 else
     echo "Warning: index.html not found"
@@ -75,7 +75,7 @@ echo "Migration completed successfully!"
 echo
 echo "What was changed:"
 echo "   • main.js → main-original.js (backup)"
-echo "   • index.html updated to use main-new.js"
+echo "   • index.html updated to use main.js"
 echo "   • index.html → index-original.html (backup)"
 echo
 echo "Testing the new version:"

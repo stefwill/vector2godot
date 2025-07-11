@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Breaking**: Restructured codebase into modular components
-- Created main-new.js as the new entry point (main.js preserved for reference)
+- Renamed main-new.js to main.js as the primary entry point
 - Separated application logic into 8 focused modules:
   - SplashScreen.js - Loading screen management
   - SettingsManager.js - Settings persistence and theme management

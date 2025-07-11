@@ -82,7 +82,7 @@ window.addEventListener('unhandledrejection', (e) => {
 
 // Export for debugging
 window.Vector2Godot = {
-  version: '1.4.0',
+  version: '1.4.1',
   getApp: () => app,
   restart: () => {
     location.reload();

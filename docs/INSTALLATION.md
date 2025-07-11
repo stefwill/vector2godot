@@ -1,25 +1,34 @@
-# Installation Guide
+# Install### Installation Instructions
 
-## Download
+#### Windows
+1. Build from source using `npm run build:win`
+2. Extract the generated ZIP file to your desired location
+3. Run `Vector2Godot.exe` from the extracted folder
+4. Optional: Create a desktop shortcut for easy access
+
+#### Linux
+1. Build from source using `npm run build:linux`
+2. Make the AppImage executable: `chmod +x Vector2Godot-1.4.1.AppImage`
+3. Run directly: `./Vector2Godot-1.4.1.AppImage`
+4. Optional: Integrate with system using AppImageLauncher## Download
 
 Ready to use Vector2Godot? Download the latest version for your platform:
 
 ### Desktop Applications
-- **Windows**: [Vector2Godot-1.4.0.exe](https://github.com/stefwill/vector2godot/releases/download/v1.4.0/Vector2Godot-1.4.0.exe)
-- **Linux**: [Vector2Godot-1.4.0.AppImage](https://github.com/stefwill/vector2godot/releases/download/v1.4.0/Vector2Godot-1.4.0.AppImage)
+Desktop applications are available for Windows and Linux platforms. Please build from source using the instructions below.
 
 ### Installation Instructions
 
 #### Windows
-1. Download the `.exe` file
-2. Double-click to run the installer
-3. Follow the installation wizard
-4. Launch from Start Menu or Desktop shortcut
+1. Download the `.zip` file
+2. Extract the contents to your desired location
+3. Run `Vector2Godot.exe` from the extracted folder
+4. Optional: Create a desktop shortcut for easy access
 
 #### Linux
 1. Download the `.AppImage` file
-2. Make it executable: `chmod +x Vector2Godot-1.4.0.AppImage`
-3. Run directly: `./Vector2Godot-1.4.0.AppImage`
+2. Make it executable: `chmod +x Vector2Godot-1.4.1.AppImage`
+3. Run directly: `./Vector2Godot-1.4.1.AppImage`
 4. Optional: Integrate with system using AppImageLauncher
 
 ### System Requirements

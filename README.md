@@ -1,6 +1,6 @@
 # Vector2Godot - Vector Drawing Tool for Game Development
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.4.1-blue.svg)
 
 Vector2Godot is a powerful, modern vector drawing application specifically designed for game developers working with the Godot Engine. This intuitive tool bridges the gap between visual design and code implementation by allowing you to draw vector shapes with precision and automatically generating the corresponding Godot `_draw()` function code.
 
@@ -9,8 +9,7 @@ Whether you're prototyping UI elements, creating simple graphics, or designing g
 ## Quick Start
 
 ### Desktop Applications
-- **Windows**: [Download Vector2Godot-1.4.0.exe](https://github.com/stefwill/vector2godot/releases/download/v1.4.0/Vector2Godot-1.4.0.exe)
-- **Linux**: [Download Vector2Godot-1.4.0.AppImage](https://github.com/stefwill/vector2godot/releases/download/v1.4.0/Vector2Godot-1.4.0.AppImage)
+Desktop applications are available for Windows and Linux platforms. Please build from source or check the releases page for availability.
 
 ### What's New in v1.4.0
 The application has been completely refactored from a monolithic architecture into a clean, modular architecture with 8 focused modules. This improves maintainability, testability, and scalability while preserving all existing functionality.

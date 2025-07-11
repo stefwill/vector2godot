@@ -5,7 +5,25 @@ All notable changes to the Vector2Godot project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.9] - 2025-07-11
+## [1.4.1] - 2025-07-11
+
+### Fixed
+- Fixed Windows build failing with NSIS installer creation errors when building from Linux
+- Changed Windows build target from "portable" to "zip" format for better cross-platform compatibility
+- Updated documentation to reflect new ZIP-based Windows distribution format
+
+### Changed
+- Windows distribution now uses ZIP archive format instead of executable installer
+- Improved cross-platform build reliability
+- Updated installation instructions for Windows users
+
+### Documentation
+- Refactored README.md into smaller, focused documentation files
+- Created separate docs for Features, User Guide, Architecture, Installation, Contributing, and Roadmap
+- Moved CURRENT_STATUS.md to docs/ directory for better organization
+- Updated WINDOWS_BUILD.md with fixed build configuration
+
+## [1.4.0] - 2025-07-11
 
 ### Added
 - **Major**: Modular architecture implementation - broke down the monolithic main.js into discrete modules

@@ -3,7 +3,7 @@ const path = require('path');
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 // App version
-const APP_VERSION = '1.3.8';
+const APP_VERSION = '1.4.1';
 
 function createWindow() {
   // Create the browser window
